@@ -1,1 +1,1 @@
-# event-capture-bun
+# event-capture-monorepo
