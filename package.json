@@ -1,5 +1,5 @@
 {
-  "name": "event-capture-bun",
+  "name": "event-capture-mono",
   "private": true,
   "workspaces": [
     "client/*",
