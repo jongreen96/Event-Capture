@@ -9,5 +9,8 @@
     "start": "concurrently 'bun run start:client' 'bun run start:server'",
     "start:client": "cd client && bun start",
     "start:server": "cd server && bun dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   }
 }
