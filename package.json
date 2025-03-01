@@ -1,16 +1,20 @@
 {
-  "name": "event-capture-mono",
-  "private": true,
-  "workspaces": [
-    "client/*",
-    "server/*"
-  ],
+  "name": "event-capture-bun",
+  "module": "server/index.ts",
+  "type": "module",
   "scripts": {
-    "start": "concurrently 'bun run start:client' 'bun run start:server'",
-    "start:client": "cd client && bun start",
-    "start:server": "cd server && bun dev"
+    "start": "bun server/index.ts",
+    "dev": "bun --watch server/index.ts"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@hono/zod-validator": "^0.4.3",
+    "hono": "^4.7.2",
+    "zod": "^3.24.2"
   }
 }
