@@ -1,9 +1,13 @@
-import { Hono } from 'hono'
+import { Hono } from 'hono';
 
-const app = new Hono()
+const app = new Hono();
 
 app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
+  return c.text('Hello Hono!');
+});
 
-export default app
+app.get('/api/test', (c) => {
+  return c.text('This is a test endpoint!');
+});
+
+export default app;
