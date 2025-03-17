@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import { createFileRoute } from '@tanstack/react-router';
 
@@ -66,6 +67,7 @@ function App() {
                   <p className='text-center text-xs text-red-500'>{error}</p>
                 )}
 
+                {/* TODO: Add magic link sign up */}
                 <Button type='submit' className='w-full'>
                   Sign in with Email
                 </Button>
@@ -78,7 +80,19 @@ function App() {
               </div>
 
               <form>
-                <Button type='submit' className='w-full'>
+                <Button
+                  type='submit'
+                  className='w-full'
+                  onClick={async (e) => {
+                    e.preventDefault();
+
+                    await authClient.signIn.social({
+                      provider: 'google',
+                      callbackURL: '/dashboard',
+                      errorCallbackURL: '/?error=true',
+                    });
+                  }}
+                >
                   Sign in with Google
                 </Button>
               </form>
