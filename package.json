@@ -1,5 +1,5 @@
 {
-  "name": "event-capture-mono",
+  "name": "event-capture-spa",
   "scripts": {
     "dev": "bun run --hot src/index.ts"
   },
