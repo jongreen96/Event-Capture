@@ -21,6 +21,10 @@ export default defineConfig({
       '@': resolve(__dirname, './src'),
     },
   },
+  build: {
+    outDir: '../src/dist',
+    emptyOutDir: true,
+  },
   server: {
     proxy: {
       '/api': {
