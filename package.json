@@ -1,14 +1,12 @@
 {
   "name": "event-capture-spa",
   "scripts": {
-    "dev": "bun run --hot src/index.ts",
-    "build": "cd client && vite build"
+    "dev": "bun run --hot src/index.ts"
   },
   "dependencies": {
     "hono": "^4.7.4"
   },
   "devDependencies": {
-    "@types/bun": "latest",
-    "vite": "^6.2.2"
+    "@types/bun": "latest"
   }
 }
