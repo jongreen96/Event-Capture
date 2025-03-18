@@ -3,8 +3,6 @@ import { auth } from './utils/auth';
 
 const apiRoute = new Hono();
 
-console.log('GERE');
-
 apiRoute.on(['POST', 'GET'], '/auth/**', (c) => auth.handler(c.req.raw));
 
 apiRoute.get('/test', (c) => {

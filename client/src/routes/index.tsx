@@ -2,25 +2,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { authClient } from '@/lib/auth-client';
-import { cn } from '@/lib/utils';
+import { signIn } from '@/lib/auth-client';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/')({
   component: App,
-  validateSearch: (
-    search: Record<string, unknown>
-  ): {
-    error: string;
-  } => {
-    return {
-      error: search.error as string,
-    };
-  },
 });
 
 function App() {
-  const { error } = Route.useSearch();
   return (
     <>
       <section className='flex items-center lg:h-[50vh] shadow-sm'>
@@ -60,12 +49,8 @@ function App() {
                   placeholder='Enter your email...'
                   autoComplete='email'
                   required
-                  className={cn('w-full', error && 'border-red-500')}
+                  className='w-full'
                 />
-
-                {error && (
-                  <p className='text-center text-xs text-red-500'>{error}</p>
-                )}
 
                 {/* TODO: Add magic link sign up */}
                 <Button type='submit' className='w-full'>
@@ -86,7 +71,7 @@ function App() {
                   onClick={async (e) => {
                     e.preventDefault();
 
-                    await authClient.signIn.social({
+                    await signIn.social({
                       provider: 'google',
                       callbackURL: '/dashboard',
                       errorCallbackURL: '/?error=true',

@@ -4,9 +4,7 @@
   "type": "module",
   "scripts": {
     "start": "vite",
-    "build": "vite build && tsc",
-    "serve": "vite preview",
-    "test": "vitest run"
+    "build": "vite build && tsc"
   },
   "dependencies": {
     "@radix-ui/react-separator": "^1.1.2",
