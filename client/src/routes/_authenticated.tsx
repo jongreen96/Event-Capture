@@ -11,7 +11,8 @@ export const Route = createFileRoute('/_authenticated')({
     const session = (await getSession()).data;
     if (!session) {
       throw redirect({
-        to: '/login',
+        to: '/sign-in',
+        search: { error: undefined },
       });
     }
     return session;
@@ -22,7 +23,7 @@ export const Route = createFileRoute('/_authenticated')({
 function RouteComponent() {
   const navigate = useNavigate();
   const { session } = Route.useRouteContext();
-  if (!session) navigate({ to: '/login' });
+  if (!session) navigate({ to: '/sign-in', search: { error: undefined } });
 
   return <Outlet />;
 }

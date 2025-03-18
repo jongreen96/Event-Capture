@@ -1,0 +1,1 @@
+import{u as o,j as t,c as s}from"./index-w3j6zHiP.js";import{B as e}from"./button-Bfdy0rSX.js";import"./clsx-B-dksMZM.js";const m=function(){const n=o();return t.jsxs(t.Fragment,{children:[t.jsx("div",{children:'Hello "/dashboard"!'}),t.jsx(e,{onClick:async()=>await s({fetchOptions:{onSuccess:async()=>{n({to:"/"})}}}),children:"Sign Out"})]})};export{m as component};

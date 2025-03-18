@@ -17,10 +17,10 @@ export const Route = createFileRoute('/sign-in')({
   validateSearch: (
     search: Record<string, unknown>
   ): {
-    error: string;
+    error: string | undefined;
   } => {
     return {
-      error: search.error as string,
+      error: search.error as string | undefined,
     };
   },
 });
