@@ -1,9 +1,19 @@
 import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { getSession } from '@/lib/auth-client';
+import { createFileRoute, Link, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/')({
   component: App,
+  beforeLoad: async () => {
+    const session = (await getSession()).data;
+    if (session) {
+      throw redirect({
+        to: '/dashboard',
+      });
+    }
+    return session;
+  },
 });
 
 function App() {

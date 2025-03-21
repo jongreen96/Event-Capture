@@ -1,1 +1,0 @@
-import{u as e,a as n,j as s,O as a}from"./index-DjGOSJhp.js";const u=function(){const t=e(),{session:o}=n.useRouteContext();return o||t({to:"/sign-in",search:{error:void 0}}),s.jsx(a,{})};export{u as component};

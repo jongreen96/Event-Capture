@@ -7,10 +7,10 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { signIn } from '@/lib/auth-client';
+import { getSession, signIn } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import { Separator } from '@radix-ui/react-separator';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/sign-in')({
   component: RouteComponent,
@@ -22,6 +22,15 @@ export const Route = createFileRoute('/sign-in')({
     return {
       error: search.error as string | undefined,
     };
+  },
+  beforeLoad: async () => {
+    const session = (await getSession()).data;
+    if (session) {
+      throw redirect({
+        to: '/dashboard',
+      });
+    }
+    return session;
   },
 });
 
