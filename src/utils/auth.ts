@@ -14,5 +14,10 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
   },
-  trustedOrigins: ['http://localhost:5173', 'https://ec.jongreen.dev'],
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 3600, // 1 hour
+    },
+  },
 });
