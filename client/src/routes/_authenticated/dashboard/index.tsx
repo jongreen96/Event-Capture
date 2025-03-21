@@ -1,6 +1,6 @@
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { signOut } from '@/lib/auth-client';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_authenticated/dashboard/')({
   component: RouteComponent,
@@ -11,6 +11,10 @@ function RouteComponent() {
   return (
     <>
       <div>Hello "/dashboard"!</div>
+
+      <Link to='/dashboard/summary' className={buttonVariants()}>
+        Go to Summary
+      </Link>
 
       <Button
         onClick={async () =>

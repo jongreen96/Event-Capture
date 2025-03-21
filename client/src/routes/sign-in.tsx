@@ -30,13 +30,37 @@ function RouteComponent() {
 
   return (
     <main className='h-svh flex items-center justify-center'>
-      <Card className='w-full sm:w-72 overflow-hidden'>
+      <Card className='w-full sm:w-72 overflow-hidden shadow-none border-none'>
         <CardHeader>
           <CardTitle className='text-2xl font-bold text-center'>
             Sign In
           </CardTitle>
         </CardHeader>
         <CardContent className='space-y-4'>
+          <form>
+            <Button
+              type='submit'
+              className='w-full'
+              onClick={async (e) => {
+                e.preventDefault();
+
+                await signIn.social({
+                  provider: 'google',
+                  callbackURL: '/dashboard',
+                  errorCallbackURL: '/?error=true',
+                });
+              }}
+            >
+              Sign in with Google
+            </Button>
+          </form>
+
+          <div className='flex items-center justify-center space-x-2'>
+            <Separator className='mt-1 w-5/12' />
+            <p className='text-center text-muted-foreground'>or</p>
+            <Separator className='mt-1 w-5/12' />
+          </div>
+
           <form className='flex flex-col gap-2'>
             <Input
               type='email'
@@ -55,30 +79,6 @@ function RouteComponent() {
             {/* TODO: Add magic link sign up */}
             <Button type='submit' className='w-full'>
               Sign in with Email
-            </Button>
-          </form>
-
-          <div className='flex items-center justify-center space-x-2'>
-            <Separator className='mt-1 w-5/12' />
-            <p className='text-center text-muted-foreground'>or</p>
-            <Separator className='mt-1 w-5/12' />
-          </div>
-
-          <form>
-            <Button
-              type='submit'
-              className='w-full'
-              onClick={async (e) => {
-                e.preventDefault();
-
-                await signIn.social({
-                  provider: 'google',
-                  callbackURL: '/dashboard',
-                  errorCallbackURL: '/?error=true',
-                });
-              }}
-            >
-              Sign in with Google
             </Button>
           </form>
         </CardContent>

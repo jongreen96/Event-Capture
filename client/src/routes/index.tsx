@@ -1,9 +1,6 @@
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
-import { signIn } from '@/lib/auth-client';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/')({
   component: App,
@@ -39,53 +36,16 @@ function App() {
             </ul>
           </div>
 
-          <Card className='w-full sm:w-72 overflow-hidden'>
-            <CardContent className='space-y-4'>
-              <form className='flex flex-col gap-2'>
-                <Input
-                  type='email'
-                  name='email'
-                  id='email-resend'
-                  placeholder='Enter your email...'
-                  autoComplete='email'
-                  required
-                  className='w-full'
-                />
-
-                {/* TODO: Add magic link sign up */}
-                <Button type='submit' className='w-full'>
-                  Sign in with Email
-                </Button>
-              </form>
-
-              <div className='flex items-center justify-center space-x-2'>
-                <Separator className='mt-1 w-5/12' />
-                <p className='text-center text-muted-foreground'>or</p>
-                <Separator className='mt-1 w-5/12' />
-              </div>
-
-              <form>
-                <Button
-                  type='submit'
-                  className='w-full'
-                  onClick={async (e) => {
-                    e.preventDefault();
-
-                    await signIn.social({
-                      provider: 'google',
-                      callbackURL: '/dashboard',
-                      errorCallbackURL: '/?error=true',
-                    });
-                  }}
-                >
-                  Sign in with Google
-                </Button>
-              </form>
-            </CardContent>
-            <CardFooter className='text-[0.7rem] text-muted-foreground'>
-              if you already have an account, we&apos;ll log you in
-            </CardFooter>
-          </Card>
+          <div className='grid text-center'>
+            <p>Get Started</p>
+            <Link
+              to='/sign-in'
+              search={{ error: undefined }}
+              className={buttonVariants()}
+            >
+              Sign In
+            </Link>
+          </div>
         </div>
       </section>
 
