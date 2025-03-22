@@ -26,6 +26,7 @@ function RouteComponent() {
             },
           })
         }
+        className='ml-2'
       >
         Sign Out
       </Button>

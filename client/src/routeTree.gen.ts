@@ -14,8 +14,10 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as SignInImport } from './routes/sign-in'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard/route'
 import { Route as AuthenticatedDashboardIndexImport } from './routes/_authenticated/dashboard/index'
-import { Route as AuthenticatedDashboardSummaryImport } from './routes/_authenticated/dashboard/summary'
+import { Route as AuthenticatedDashboardPhotosImport } from './routes/_authenticated/dashboard/photos'
+import { Route as AuthenticatedDashboardGuestsImport } from './routes/_authenticated/dashboard/guests'
 
 // Create/Update Routes
 
@@ -36,18 +38,32 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const AuthenticatedDashboardIndexRoute =
-  AuthenticatedDashboardIndexImport.update({
-    id: '/dashboard/',
-    path: '/dashboard/',
+const AuthenticatedDashboardRouteRoute =
+  AuthenticatedDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 
-const AuthenticatedDashboardSummaryRoute =
-  AuthenticatedDashboardSummaryImport.update({
-    id: '/dashboard/summary',
-    path: '/dashboard/summary',
-    getParentRoute: () => AuthenticatedRoute,
+const AuthenticatedDashboardIndexRoute =
+  AuthenticatedDashboardIndexImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any)
+
+const AuthenticatedDashboardPhotosRoute =
+  AuthenticatedDashboardPhotosImport.update({
+    id: '/photos',
+    path: '/photos',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any)
+
+const AuthenticatedDashboardGuestsRoute =
+  AuthenticatedDashboardGuestsImport.update({
+    id: '/guests',
+    path: '/guests',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
   } as any)
 
 // Populate the FileRoutesByPath interface
@@ -75,33 +91,64 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignInImport
       parentRoute: typeof rootRoute
     }
-    '/_authenticated/dashboard/summary': {
-      id: '/_authenticated/dashboard/summary'
-      path: '/dashboard/summary'
-      fullPath: '/dashboard/summary'
-      preLoaderRoute: typeof AuthenticatedDashboardSummaryImport
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedImport
+    }
+    '/_authenticated/dashboard/guests': {
+      id: '/_authenticated/dashboard/guests'
+      path: '/guests'
+      fullPath: '/dashboard/guests'
+      preLoaderRoute: typeof AuthenticatedDashboardGuestsImport
+      parentRoute: typeof AuthenticatedDashboardRouteImport
+    }
+    '/_authenticated/dashboard/photos': {
+      id: '/_authenticated/dashboard/photos'
+      path: '/photos'
+      fullPath: '/dashboard/photos'
+      preLoaderRoute: typeof AuthenticatedDashboardPhotosImport
+      parentRoute: typeof AuthenticatedDashboardRouteImport
     }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard'
+      path: '/'
+      fullPath: '/dashboard/'
       preLoaderRoute: typeof AuthenticatedDashboardIndexImport
-      parentRoute: typeof AuthenticatedImport
+      parentRoute: typeof AuthenticatedDashboardRouteImport
     }
   }
 }
 
 // Create and export the route tree
 
-interface AuthenticatedRouteChildren {
-  AuthenticatedDashboardSummaryRoute: typeof AuthenticatedDashboardSummaryRoute
+interface AuthenticatedDashboardRouteRouteChildren {
+  AuthenticatedDashboardGuestsRoute: typeof AuthenticatedDashboardGuestsRoute
+  AuthenticatedDashboardPhotosRoute: typeof AuthenticatedDashboardPhotosRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
 }
 
+const AuthenticatedDashboardRouteRouteChildren: AuthenticatedDashboardRouteRouteChildren =
+  {
+    AuthenticatedDashboardGuestsRoute: AuthenticatedDashboardGuestsRoute,
+    AuthenticatedDashboardPhotosRoute: AuthenticatedDashboardPhotosRoute,
+    AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
+  }
+
+const AuthenticatedDashboardRouteRouteWithChildren =
+  AuthenticatedDashboardRouteRoute._addFileChildren(
+    AuthenticatedDashboardRouteRouteChildren,
+  )
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedDashboardRouteRoute: typeof AuthenticatedDashboardRouteRouteWithChildren
+}
+
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedDashboardSummaryRoute: AuthenticatedDashboardSummaryRoute,
-  AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
+  AuthenticatedDashboardRouteRoute:
+    AuthenticatedDashboardRouteRouteWithChildren,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -112,15 +159,18 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
   '/sign-in': typeof SignInRoute
-  '/dashboard/summary': typeof AuthenticatedDashboardSummaryRoute
-  '/dashboard': typeof AuthenticatedDashboardIndexRoute
+  '/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
+  '/dashboard/guests': typeof AuthenticatedDashboardGuestsRoute
+  '/dashboard/photos': typeof AuthenticatedDashboardPhotosRoute
+  '/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
   '/sign-in': typeof SignInRoute
-  '/dashboard/summary': typeof AuthenticatedDashboardSummaryRoute
+  '/dashboard/guests': typeof AuthenticatedDashboardGuestsRoute
+  '/dashboard/photos': typeof AuthenticatedDashboardPhotosRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
 }
 
@@ -129,21 +179,38 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/sign-in': typeof SignInRoute
-  '/_authenticated/dashboard/summary': typeof AuthenticatedDashboardSummaryRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
+  '/_authenticated/dashboard/guests': typeof AuthenticatedDashboardGuestsRoute
+  '/_authenticated/dashboard/photos': typeof AuthenticatedDashboardPhotosRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '' | '/sign-in' | '/dashboard/summary' | '/dashboard'
+  fullPaths:
+    | '/'
+    | ''
+    | '/sign-in'
+    | '/dashboard'
+    | '/dashboard/guests'
+    | '/dashboard/photos'
+    | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/sign-in' | '/dashboard/summary' | '/dashboard'
+  to:
+    | '/'
+    | ''
+    | '/sign-in'
+    | '/dashboard/guests'
+    | '/dashboard/photos'
+    | '/dashboard'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/sign-in'
-    | '/_authenticated/dashboard/summary'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/dashboard/guests'
+    | '/_authenticated/dashboard/photos'
     | '/_authenticated/dashboard/'
   fileRoutesById: FileRoutesById
 }
@@ -181,20 +248,32 @@ export const routeTree = rootRoute
     "/_authenticated": {
       "filePath": "_authenticated.tsx",
       "children": [
-        "/_authenticated/dashboard/summary",
-        "/_authenticated/dashboard/"
+        "/_authenticated/dashboard"
       ]
     },
     "/sign-in": {
       "filePath": "sign-in.tsx"
     },
-    "/_authenticated/dashboard/summary": {
-      "filePath": "_authenticated/dashboard/summary.tsx",
-      "parent": "/_authenticated"
+    "/_authenticated/dashboard": {
+      "filePath": "_authenticated/dashboard/route.tsx",
+      "parent": "/_authenticated",
+      "children": [
+        "/_authenticated/dashboard/guests",
+        "/_authenticated/dashboard/photos",
+        "/_authenticated/dashboard/"
+      ]
+    },
+    "/_authenticated/dashboard/guests": {
+      "filePath": "_authenticated/dashboard/guests.tsx",
+      "parent": "/_authenticated/dashboard"
+    },
+    "/_authenticated/dashboard/photos": {
+      "filePath": "_authenticated/dashboard/photos.tsx",
+      "parent": "/_authenticated/dashboard"
     },
     "/_authenticated/dashboard/": {
       "filePath": "_authenticated/dashboard/index.tsx",
-      "parent": "/_authenticated"
+      "parent": "/_authenticated/dashboard"
     }
   }
 }
