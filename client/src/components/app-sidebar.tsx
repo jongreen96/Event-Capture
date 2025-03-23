@@ -15,7 +15,7 @@ export function AppSidebar() {
   const matchRoute = useMatchRoute();
 
   return (
-    <Sidebar variant='floating'>
+    <Sidebar variant='sidebar'>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Dashboard</SidebarGroupLabel>

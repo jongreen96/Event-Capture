@@ -10,7 +10,7 @@ function RouteComponent() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className='px-2'>
+      <main className='w-full p-4 pt-18 @container flex flex-col gap-10'>
         <SidebarTrigger />
         <Outlet />
       </main>
