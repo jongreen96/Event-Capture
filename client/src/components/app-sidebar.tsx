@@ -3,10 +3,12 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { Link, useMatchRoute } from '@tanstack/react-router';
 import { ImageIcon, LayoutDashboardIcon, UserIcon } from 'lucide-react';
@@ -16,6 +18,10 @@ export function AppSidebar() {
 
   return (
     <Sidebar variant='sidebar'>
+      <SidebarHeader className='flex flex-row items-center justify-between'>
+        <p className='select-none font-semibold text-2xl'>Event Capture</p>
+        <SidebarTrigger />
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
