@@ -29,21 +29,24 @@ function RouteComponent() {
         <Card>
           <CardHeader>
             <CardTitle className='flex items-center gap-2'>
-              <UserIcon className='size-4' /> Guests
+              <UserIcon className='size-4' />
+              Guests
             </CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader>
             <CardTitle className='flex items-center gap-2'>
-              <ChartColumnIcon className='size-4' /> Usage
+              <ChartColumnIcon className='size-4' />
+              Usage
             </CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader>
             <CardTitle className='flex items-center gap-2'>
-              <FileQuestionIcon className='size-4' /> Unknown
+              <FileQuestionIcon className='size-4' />
+              Unknown
             </CardTitle>
           </CardHeader>
         </Card>
