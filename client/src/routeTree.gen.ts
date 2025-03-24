@@ -11,6 +11,7 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as WelcomeImport } from './routes/welcome'
 import { Route as SignInImport } from './routes/sign-in'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
@@ -20,6 +21,12 @@ import { Route as AuthenticatedDashboardPhotosImport } from './routes/_authentic
 import { Route as AuthenticatedDashboardGuestsImport } from './routes/_authenticated/dashboard/guests'
 
 // Create/Update Routes
+
+const WelcomeRoute = WelcomeImport.update({
+  id: '/welcome',
+  path: '/welcome',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const SignInRoute = SignInImport.update({
   id: '/sign-in',
@@ -91,6 +98,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignInImport
       parentRoute: typeof rootRoute
     }
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeImport
+      parentRoute: typeof rootRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -159,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
   '/sign-in': typeof SignInRoute
+  '/welcome': typeof WelcomeRoute
   '/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/dashboard/guests': typeof AuthenticatedDashboardGuestsRoute
   '/dashboard/photos': typeof AuthenticatedDashboardPhotosRoute
@@ -169,6 +184,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
   '/sign-in': typeof SignInRoute
+  '/welcome': typeof WelcomeRoute
   '/dashboard/guests': typeof AuthenticatedDashboardGuestsRoute
   '/dashboard/photos': typeof AuthenticatedDashboardPhotosRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
@@ -179,6 +195,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/sign-in': typeof SignInRoute
+  '/welcome': typeof WelcomeRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/_authenticated/dashboard/guests': typeof AuthenticatedDashboardGuestsRoute
   '/_authenticated/dashboard/photos': typeof AuthenticatedDashboardPhotosRoute
@@ -191,6 +208,7 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/sign-in'
+    | '/welcome'
     | '/dashboard'
     | '/dashboard/guests'
     | '/dashboard/photos'
@@ -200,6 +218,7 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/sign-in'
+    | '/welcome'
     | '/dashboard/guests'
     | '/dashboard/photos'
     | '/dashboard'
@@ -208,6 +227,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/sign-in'
+    | '/welcome'
     | '/_authenticated/dashboard'
     | '/_authenticated/dashboard/guests'
     | '/_authenticated/dashboard/photos'
@@ -219,12 +239,14 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   SignInRoute: typeof SignInRoute
+  WelcomeRoute: typeof WelcomeRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   SignInRoute: SignInRoute,
+  WelcomeRoute: WelcomeRoute,
 }
 
 export const routeTree = rootRoute
@@ -239,7 +261,8 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/_authenticated",
-        "/sign-in"
+        "/sign-in",
+        "/welcome"
       ]
     },
     "/": {
@@ -253,6 +276,9 @@ export const routeTree = rootRoute
     },
     "/sign-in": {
       "filePath": "sign-in.tsx"
+    },
+    "/welcome": {
+      "filePath": "welcome.tsx"
     },
     "/_authenticated/dashboard": {
       "filePath": "_authenticated/dashboard/route.tsx",

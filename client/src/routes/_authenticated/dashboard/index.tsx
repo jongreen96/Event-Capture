@@ -4,7 +4,7 @@ import { signOut } from '@/lib/auth-client';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import {
   ChartColumnIcon,
-  FileQuestionIcon,
+  FileBarChart2Icon,
   ImageIcon,
   UserIcon,
 } from 'lucide-react';
@@ -45,8 +45,8 @@ function RouteComponent() {
         <Card>
           <CardHeader>
             <CardTitle className='flex items-center gap-2'>
-              <FileQuestionIcon className='size-4' />
-              Unknown
+              <FileBarChart2Icon className='size-4' />
+              Plan
             </CardTitle>
           </CardHeader>
         </Card>
