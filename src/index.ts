@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { serveStatic } from 'hono/bun';
 import { logger } from 'hono/logger';
-import apiRoute from './api';
+import apiRoute from './api/api';
 
 const app = new Hono();
 

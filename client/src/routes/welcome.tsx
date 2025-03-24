@@ -19,8 +19,12 @@ function RouteComponent() {
   const [error, setError] = useState<string | null>(null);
 
   const purchasePlan = async (plan: string) => {
-    const res = await fetch(`/api/plan/create/${plan}`, {
+    const res = await fetch(`/api/plan`, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ plan }),
     });
     if (res.ok) {
       navigate({ to: '/dashboard' });
