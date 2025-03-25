@@ -74,7 +74,7 @@ export async function updatePlan({
   const res = await db.query(
     `
     UPDATE plan
-    SET ${key} = $1
+    SET ${key} = $1, updatedat = NOW()
     WHERE id = $2
     AND userid = $3
     RETURNING id
