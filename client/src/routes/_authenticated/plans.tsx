@@ -9,7 +9,7 @@ import {
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 
-export const Route = createFileRoute('/_authenticated/welcome')({
+export const Route = createFileRoute('/_authenticated/plans')({
   component: RouteComponent,
 });
 
@@ -40,8 +40,7 @@ function RouteComponent() {
       <Card className='w-full max-w-7xl overflow-hidden shadow-none text-center border-none'>
         <CardHeader>
           <CardTitle className='text-2xl font-bold'>
-            Welcome to <br /> Event Capture
-            <p className='text-base font-normal'>Select a plan below:</p>
+            Select a plan:
             {error && (
               <p className='text-red-500 text-base font-semibold'>{error}</p>
             )}
