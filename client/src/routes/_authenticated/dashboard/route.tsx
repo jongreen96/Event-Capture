@@ -26,7 +26,7 @@ function App() {
       <AppSidebar />
       <SidebarTrigger
         className={cn(
-          'absolute top-2 left-2',
+          'fixed top-2 left-2',
           state === 'expanded' && openMobile && 'hidden'
         )}
       />
