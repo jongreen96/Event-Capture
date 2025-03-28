@@ -9,7 +9,7 @@ import {
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 
-export const Route = createFileRoute('/welcome')({
+export const Route = createFileRoute('/_authenticated/welcome')({
   component: RouteComponent,
 });
 

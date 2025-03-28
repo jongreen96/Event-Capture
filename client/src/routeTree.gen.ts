@@ -11,22 +11,16 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as WelcomeImport } from './routes/welcome'
 import { Route as SignInImport } from './routes/sign-in'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
+import { Route as AuthenticatedWelcomeImport } from './routes/_authenticated/welcome'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard/route'
 import { Route as AuthenticatedDashboardIndexImport } from './routes/_authenticated/dashboard/index'
 import { Route as AuthenticatedDashboardPhotosImport } from './routes/_authenticated/dashboard/photos'
 import { Route as AuthenticatedDashboardGuestsImport } from './routes/_authenticated/dashboard/guests'
 
 // Create/Update Routes
-
-const WelcomeRoute = WelcomeImport.update({
-  id: '/welcome',
-  path: '/welcome',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const SignInRoute = SignInImport.update({
   id: '/sign-in',
@@ -43,6 +37,12 @@ const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const AuthenticatedWelcomeRoute = AuthenticatedWelcomeImport.update({
+  id: '/welcome',
+  path: '/welcome',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 
 const AuthenticatedDashboardRouteRoute =
@@ -98,18 +98,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignInImport
       parentRoute: typeof rootRoute
     }
-    '/welcome': {
-      id: '/welcome'
-      path: '/welcome'
-      fullPath: '/welcome'
-      preLoaderRoute: typeof WelcomeImport
-      parentRoute: typeof rootRoute
-    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedImport
+    }
+    '/_authenticated/welcome': {
+      id: '/_authenticated/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof AuthenticatedWelcomeImport
       parentRoute: typeof AuthenticatedImport
     }
     '/_authenticated/dashboard/guests': {
@@ -158,11 +158,13 @@ const AuthenticatedDashboardRouteRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRouteRoute: typeof AuthenticatedDashboardRouteRouteWithChildren
+  AuthenticatedWelcomeRoute: typeof AuthenticatedWelcomeRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRouteRoute:
     AuthenticatedDashboardRouteRouteWithChildren,
+  AuthenticatedWelcomeRoute: AuthenticatedWelcomeRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -173,8 +175,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
   '/sign-in': typeof SignInRoute
-  '/welcome': typeof WelcomeRoute
   '/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
+  '/welcome': typeof AuthenticatedWelcomeRoute
   '/dashboard/guests': typeof AuthenticatedDashboardGuestsRoute
   '/dashboard/photos': typeof AuthenticatedDashboardPhotosRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
@@ -184,7 +186,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
   '/sign-in': typeof SignInRoute
-  '/welcome': typeof WelcomeRoute
+  '/welcome': typeof AuthenticatedWelcomeRoute
   '/dashboard/guests': typeof AuthenticatedDashboardGuestsRoute
   '/dashboard/photos': typeof AuthenticatedDashboardPhotosRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
@@ -195,8 +197,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/sign-in': typeof SignInRoute
-  '/welcome': typeof WelcomeRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
+  '/_authenticated/welcome': typeof AuthenticatedWelcomeRoute
   '/_authenticated/dashboard/guests': typeof AuthenticatedDashboardGuestsRoute
   '/_authenticated/dashboard/photos': typeof AuthenticatedDashboardPhotosRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
@@ -208,8 +210,8 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/sign-in'
-    | '/welcome'
     | '/dashboard'
+    | '/welcome'
     | '/dashboard/guests'
     | '/dashboard/photos'
     | '/dashboard/'
@@ -227,8 +229,8 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/sign-in'
-    | '/welcome'
     | '/_authenticated/dashboard'
+    | '/_authenticated/welcome'
     | '/_authenticated/dashboard/guests'
     | '/_authenticated/dashboard/photos'
     | '/_authenticated/dashboard/'
@@ -239,14 +241,12 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   SignInRoute: typeof SignInRoute
-  WelcomeRoute: typeof WelcomeRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   SignInRoute: SignInRoute,
-  WelcomeRoute: WelcomeRoute,
 }
 
 export const routeTree = rootRoute
@@ -261,8 +261,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/_authenticated",
-        "/sign-in",
-        "/welcome"
+        "/sign-in"
       ]
     },
     "/": {
@@ -271,14 +270,12 @@ export const routeTree = rootRoute
     "/_authenticated": {
       "filePath": "_authenticated.tsx",
       "children": [
-        "/_authenticated/dashboard"
+        "/_authenticated/dashboard",
+        "/_authenticated/welcome"
       ]
     },
     "/sign-in": {
       "filePath": "sign-in.tsx"
-    },
-    "/welcome": {
-      "filePath": "welcome.tsx"
     },
     "/_authenticated/dashboard": {
       "filePath": "_authenticated/dashboard/route.tsx",
@@ -288,6 +285,10 @@ export const routeTree = rootRoute
         "/_authenticated/dashboard/photos",
         "/_authenticated/dashboard/"
       ]
+    },
+    "/_authenticated/welcome": {
+      "filePath": "_authenticated/welcome.tsx",
+      "parent": "/_authenticated"
     },
     "/_authenticated/dashboard/guests": {
       "filePath": "_authenticated/dashboard/guests.tsx",
