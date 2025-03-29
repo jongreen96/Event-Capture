@@ -15,6 +15,7 @@ export const Route = createFileRoute('/_authenticated')({
         search: { error: undefined },
       });
     }
+
     return session;
   },
   component: RouteComponent,

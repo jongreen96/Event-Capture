@@ -12,6 +12,7 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { signOut } from '@/lib/auth-client';
+import { getPlans } from '@/lib/queries';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useMatchRoute, useNavigate } from '@tanstack/react-router';
 import {
@@ -34,13 +35,8 @@ import {
 import { Separator } from './ui/separator';
 import { Skeleton } from './ui/skeleton';
 
-async function getPlans(): Promise<Plan[]> {
-  const plans = await fetch('/api/plan').then((res) => res.json());
-  return plans;
-}
-
 export function AppSidebar({ user }: { user: User }) {
-  const { data, isLoading, isError } = useQuery({
+  const plans = useQuery({
     queryKey: ['plans'],
     queryFn: getPlans,
     staleTime: Infinity,
@@ -49,7 +45,7 @@ export function AppSidebar({ user }: { user: User }) {
   const matchRoute = useMatchRoute();
   const navigate = useNavigate();
 
-  if (isLoading) {
+  if (plans.isLoading) {
     return (
       <Sidebar>
         <SidebarHeader className='flex flex-row items-center justify-between'>
@@ -70,7 +66,7 @@ export function AppSidebar({ user }: { user: User }) {
     );
   }
 
-  if (isError) {
+  if (plans.isError) {
     return (
       <Sidebar>
         <SidebarHeader className='flex flex-row items-center justify-between'>
@@ -147,7 +143,7 @@ export function AppSidebar({ user }: { user: User }) {
                   <SidebarMenuButton>
                     <FileBarChart2Icon />
                     {/* TODO: Add logic to display selected plan name here */}
-                    {data![0].eventname || 'Event'}
+                    {plans.data?.[0]?.eventname || 'Event'}
                     <ChevronUpIcon className='ml-auto' />
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
@@ -159,7 +155,7 @@ export function AppSidebar({ user }: { user: User }) {
                     </Link>
                   </DropdownMenuItem>
                   <Separator className='my-1' />
-                  {data!.map((plan: Plan) => (
+                  {plans.data!.map((plan: Plan) => (
                     <DropdownMenuItem key={plan.id}>
                       {plan.eventname}
                     </DropdownMenuItem>

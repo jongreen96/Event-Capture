@@ -22,7 +22,6 @@ function RouteComponent() {
 function App() {
   const { state, openMobile } = useSidebar();
   const { user } = Route.useRouteContext();
-
   return (
     <>
       <AppSidebar user={user} />

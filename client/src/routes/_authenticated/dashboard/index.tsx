@@ -1,4 +1,6 @@
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { getPlans } from '@/lib/queries';
+import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import {
   ChartColumnIcon,
@@ -12,6 +14,20 @@ export const Route = createFileRoute('/_authenticated/dashboard/')({
 });
 
 function RouteComponent() {
+  const plans = useQuery({
+    queryKey: ['plans'],
+    queryFn: getPlans,
+    staleTime: Infinity,
+  });
+
+  if (plans.isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (plans.isError) {
+    return <p>Error loading plans.</p>;
+  }
+
   return (
     <>
       <section className='grid grid-cols-2 @3xl:grid-cols-4 gap-4'>
