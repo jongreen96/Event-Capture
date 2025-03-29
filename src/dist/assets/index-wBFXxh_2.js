@@ -1,0 +1,6 @@
+import{j as s}from"./index-f-qc5skh.js";import{C as e,a,b as r}from"./card-thSNzhS5.js";import{c,I as n,U as t,F as i}from"./user-WlEQw6mq.js";import"./utils-jAU0Cazi.js";/**
+ * @license lucide-react v0.483.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const l=[["path",{d:"M3 3v16a2 2 0 0 0 2 2h16",key:"c24i48"}],["path",{d:"M18 17V9",key:"2bz60n"}],["path",{d:"M13 17V5",key:"1frdt8"}],["path",{d:"M8 17v-3",key:"17ska0"}]],o=c("ChartColumn",l),p=function(){return s.jsx(s.Fragment,{children:s.jsxs("section",{className:"grid grid-cols-2 @3xl:grid-cols-4 gap-4",children:[s.jsx(e,{children:s.jsx(a,{children:s.jsxs(r,{className:"flex items-center gap-2",children:[s.jsx(n,{className:"size-4"}),"Photos"]})})}),s.jsx(e,{children:s.jsx(a,{children:s.jsxs(r,{className:"flex items-center gap-2",children:[s.jsx(t,{className:"size-4"}),"Guests"]})})}),s.jsx(e,{children:s.jsx(a,{children:s.jsxs(r,{className:"flex items-center gap-2",children:[s.jsx(o,{className:"size-4"}),"Usage"]})})}),s.jsx(e,{children:s.jsx(a,{children:s.jsxs(r,{className:"flex items-center gap-2",children:[s.jsx(i,{className:"size-4"}),"Plan"]})})})]})})};export{p as component};

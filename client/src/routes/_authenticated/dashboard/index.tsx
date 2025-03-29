@@ -1,7 +1,5 @@
-import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
-import { signOut } from '@/lib/auth-client';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import {
   ChartColumnIcon,
   FileBarChart2Icon,
@@ -14,7 +12,6 @@ export const Route = createFileRoute('/_authenticated/dashboard/')({
 });
 
 function RouteComponent() {
-  const navigate = useNavigate();
   return (
     <>
       <section className='grid grid-cols-2 @3xl:grid-cols-4 gap-4'>
@@ -51,21 +48,6 @@ function RouteComponent() {
           </CardHeader>
         </Card>
       </section>
-
-      <Button
-        onClick={async () =>
-          await signOut({
-            fetchOptions: {
-              onSuccess: async () => {
-                navigate({ to: '/' });
-              },
-            },
-          })
-        }
-        className='ml-2'
-      >
-        Sign Out
-      </Button>
     </>
   );
 }

@@ -268,8 +268,8 @@ function SidebarTrigger({
         'size-10 bg-sidebar border-sidebar-border border-1',
         className
       )}
-      onClick={() => {
-        // onClick?.(event);
+      onClick={(event) => {
+        onClick?.(event);
         toggleSidebar();
       }}
       {...props}

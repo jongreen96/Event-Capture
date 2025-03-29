@@ -21,9 +21,11 @@ function RouteComponent() {
 
 function App() {
   const { state, openMobile } = useSidebar();
+  const { user } = Route.useRouteContext();
+
   return (
     <>
-      <AppSidebar />
+      <AppSidebar user={user} />
       <SidebarTrigger
         className={cn(
           'fixed top-2 left-2',

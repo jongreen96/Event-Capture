@@ -11,8 +11,9 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
+import { signOut } from '@/lib/auth-client';
 import { useQuery } from '@tanstack/react-query';
-import { Link, useMatchRoute } from '@tanstack/react-router';
+import { Link, useMatchRoute, useNavigate } from '@tanstack/react-router';
 import {
   ChevronUpIcon,
   FileBarChart2Icon,
@@ -21,7 +22,8 @@ import {
   PlusIcon,
   UserIcon,
 } from 'lucide-react';
-import type { Plan } from '../../../src/utils/types';
+import type { Plan, User } from '../../../src/utils/types';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
 import {
   DropdownMenu,
@@ -37,7 +39,7 @@ async function getPlans(): Promise<Plan[]> {
   return plans;
 }
 
-export function AppSidebar() {
+export function AppSidebar({ user }: { user: User }) {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['plans'],
     queryFn: getPlans,
@@ -45,6 +47,7 @@ export function AppSidebar() {
   });
 
   const matchRoute = useMatchRoute();
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -83,9 +86,9 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar variant='sidebar'>
+    <Sidebar variant='sidebar' className='select-none'>
       <SidebarHeader className='flex flex-row items-center justify-between'>
-        <p className='select-none font-semibold text-2xl'>Event Capture</p>
+        <p className='font-semibold text-2xl'>Event Capture</p>
         <SidebarTrigger />
       </SidebarHeader>
 
@@ -143,8 +146,8 @@ export function AppSidebar() {
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuButton>
                     <FileBarChart2Icon />
-                    Event name
                     {/* TODO: Add logic to display selected plan name here */}
+                    {data![0].eventname || 'Event'}
                     <ChevronUpIcon className='ml-auto' />
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
@@ -161,6 +164,50 @@ export function AppSidebar() {
                       {plan.eventname}
                     </DropdownMenuItem>
                   ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
+
+        <SidebarGroup className='p-0'>
+          <SidebarGroupLabel>Account</SidebarGroupLabel>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton>
+                    <div className='grid grid-cols-[auto_1fr_auto] items-center gap-2 w-full'>
+                      <Avatar className='rounded-sm'>
+                        <AvatarImage src={user.image ?? undefined} />
+                        <AvatarFallback>
+                          <UserIcon />
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <div className='text-left -space-y-1 overflow-hidden'>
+                        <p>{user.name}</p>
+                        <p className='text-xs text-gray-500'>{user.email}</p>
+                      </div>
+                      <ChevronUpIcon className='ml-auto size-4' />
+                    </div>
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent className='w-[239px]'>
+                  <DropdownMenuItem
+                    onClick={async () =>
+                      await signOut({
+                        fetchOptions: {
+                          onSuccess: async () => {
+                            navigate({ to: '/' });
+                          },
+                        },
+                      })
+                    }
+                  >
+                    Sign Out
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </SidebarMenuItem>
