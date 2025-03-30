@@ -9,6 +9,7 @@ import {
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { signOut } from '@/lib/auth-client';
@@ -82,11 +83,13 @@ export function AppSidebar({ user }: { user: User }) {
   }
 
   return (
-    <Sidebar variant='sidebar' className='select-none'>
+    <Sidebar variant='sidebar' className='select-none overflow-hidden'>
       <SidebarHeader className='flex flex-row items-center justify-between'>
         <p className='font-semibold text-2xl'>Event Capture</p>
         <SidebarTrigger />
       </SidebarHeader>
+
+      <SidebarSeparator className='ml-0 scale-110' />
 
       <SidebarContent>
         <SidebarGroup>
@@ -133,6 +136,8 @@ export function AppSidebar({ user }: { user: User }) {
         </SidebarGroup>
       </SidebarContent>
 
+      <SidebarSeparator className='ml-0 scale-110' />
+
       <SidebarFooter>
         <SidebarGroup className='p-0'>
           <SidebarGroupLabel>Plans</SidebarGroupLabel>
@@ -165,6 +170,8 @@ export function AppSidebar({ user }: { user: User }) {
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
+
+        <SidebarSeparator className='ml-0 scale-110' />
 
         <SidebarGroup className='p-0'>
           <SidebarGroupLabel>Account</SidebarGroupLabel>
