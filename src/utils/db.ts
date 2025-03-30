@@ -8,11 +8,31 @@ export async function getPlans(userId: string) {
     `
     SELECT id, plan, eventname, pauseduploads, url, pin, status, enddate, nextbillingdate, createdat
     FROM plan
-    WHERE userid = $1`,
+    WHERE userid = $1
+    `,
     [userId]
   );
 
-  return plans.rows;
+  if (plans.rows.length === 0) return [];
+
+  const planIds = plans.rows.map((plan) => plan.id);
+
+  const images = await db.query(
+    `
+    SELECT * FROM images WHERE planid = ANY($1)
+    `,
+    [planIds]
+  );
+
+  const planMap = new Map(
+    plans.rows.map((plan) => [plan.id, { ...plan, images: [] }])
+  );
+
+  for (const image of images.rows) {
+    planMap.get(image.planid)?.images.push(image);
+  }
+
+  return Array.from(planMap.values());
 }
 
 export async function createPlan({
