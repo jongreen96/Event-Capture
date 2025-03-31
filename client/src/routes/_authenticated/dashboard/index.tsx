@@ -1,7 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getPlans } from '@/lib/queries';
 import { PlanContext, type PlanContextType } from '@/routes/_authenticated';
-import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import {
   ChartColumnIcon,
@@ -16,19 +14,9 @@ export const Route = createFileRoute('/_authenticated/dashboard/')({
 });
 
 function RouteComponent() {
-  const plans = useQuery({
-    queryKey: ['plans'],
-    queryFn: getPlans,
-    staleTime: Infinity,
-  });
-
   const { activePlan } = useContext(PlanContext) as PlanContextType;
 
-  if (plans.isLoading) {
-    return <p>Loading...</p>;
-  }
-
-  if (plans.isError) {
+  if (!activePlan) {
     return <p>Error loading plans.</p>;
   }
 
@@ -56,12 +44,7 @@ function RouteComponent() {
           </CardHeader>
 
           <CardContent>
-            <p>
-              {activePlan?.images
-                ? new Set(activePlan.images.map((image) => image.guestname))
-                    .size
-                : 0}
-            </p>
+            <p>{activePlan.guests.length}</p>
           </CardContent>
         </Card>
         <Card>

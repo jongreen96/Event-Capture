@@ -129,7 +129,7 @@ export function AppSidebar({ user }: { user: User }) {
                     Photos
                   </Link>
                 </SidebarMenuButton>
-                <SidebarMenuBadge>0</SidebarMenuBadge>
+                <SidebarMenuBadge>{activePlan?.images.length}</SidebarMenuBadge>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
@@ -141,7 +141,7 @@ export function AppSidebar({ user }: { user: User }) {
                     Guests
                   </Link>
                 </SidebarMenuButton>
-                <SidebarMenuBadge>0</SidebarMenuBadge>
+                <SidebarMenuBadge>{activePlan?.guests.length}</SidebarMenuBadge>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>

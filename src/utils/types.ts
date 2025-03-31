@@ -24,6 +24,7 @@ export type Plan = {
     imageurl: string;
     createdat: Date;
   }[];
+  guests: string[];
   enddate: string;
   nextbillingdate: string;
   createdat: string;

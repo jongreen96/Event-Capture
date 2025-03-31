@@ -25,11 +25,19 @@ export async function getPlans(userId: string) {
   );
 
   const planMap = new Map(
-    plans.rows.map((plan) => [plan.id, { ...plan, images: [] }])
+    plans.rows.map((plan) => [plan.id, { ...plan, images: [], guests: [] }])
   );
 
   for (const image of images.rows) {
-    planMap.get(image.planid)?.images.push(image);
+    const plan = planMap.get(image.planid);
+    if (plan) {
+      plan.images.push(image);
+      if (image.guestname) {
+        const guestSet = new Set(plan.guests);
+        guestSet.add(image.guestname);
+        plan.guests = Array.from(guestSet);
+      }
+    }
   }
 
   return Array.from(planMap.values());
