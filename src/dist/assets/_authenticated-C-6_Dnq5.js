@@ -1,0 +1,1 @@
+import{u as a,a as r,r as i,j as t,P as u,O as c}from"./index-BybY2kg1.js";const x=function(){const e=a(),{session:o}=r.useRouteContext();o||e({to:"/sign-in",search:{error:void 0}});const[n,s]=i.useState(null);return t.jsx(u.Provider,{value:{activePlan:n,setActivePlan:s},children:t.jsx(c,{})})};export{x as component};

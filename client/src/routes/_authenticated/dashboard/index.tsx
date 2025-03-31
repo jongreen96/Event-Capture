@@ -1,5 +1,6 @@
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getPlans } from '@/lib/queries';
+import { PlanContext, type PlanContextType } from '@/routes/_authenticated';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import {
@@ -8,6 +9,7 @@ import {
   ImageIcon,
   UserIcon,
 } from 'lucide-react';
+import { useContext } from 'react';
 
 export const Route = createFileRoute('/_authenticated/dashboard/')({
   component: RouteComponent,
@@ -19,6 +21,8 @@ function RouteComponent() {
     queryFn: getPlans,
     staleTime: Infinity,
   });
+
+  const { activePlan } = useContext(PlanContext) as PlanContextType;
 
   if (plans.isLoading) {
     return <p>Loading...</p>;
@@ -38,6 +42,10 @@ function RouteComponent() {
               Photos
             </CardTitle>
           </CardHeader>
+
+          <CardContent>
+            <p>{activePlan?.images.length}</p>
+          </CardContent>
         </Card>
         <Card>
           <CardHeader>
@@ -46,6 +54,15 @@ function RouteComponent() {
               Guests
             </CardTitle>
           </CardHeader>
+
+          <CardContent>
+            <p>
+              {activePlan?.images
+                ? new Set(activePlan.images.map((image) => image.guestname))
+                    .size
+                : 0}
+            </p>
+          </CardContent>
         </Card>
         <Card>
           <CardHeader>
@@ -54,6 +71,10 @@ function RouteComponent() {
               Usage
             </CardTitle>
           </CardHeader>
+
+          <CardContent>
+            <p>{/* TODO */}</p>
+          </CardContent>
         </Card>
         <Card>
           <CardHeader>
@@ -62,6 +83,10 @@ function RouteComponent() {
               Plan
             </CardTitle>
           </CardHeader>
+
+          <CardContent>
+            <p>{activePlan?.plan}</p>
+          </CardContent>
         </Card>
       </section>
     </>

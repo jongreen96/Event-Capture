@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/sidebar';
 import { signOut } from '@/lib/auth-client';
 import { getPlans } from '@/lib/queries';
+import { PlanContext, type PlanContextType } from '@/routes/_authenticated';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useMatchRoute, useNavigate } from '@tanstack/react-router';
 import {
@@ -24,6 +25,7 @@ import {
   PlusIcon,
   UserIcon,
 } from 'lucide-react';
+import { useContext, useEffect } from 'react';
 import type { Plan, User } from '../../../src/utils/types';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
@@ -45,6 +47,16 @@ export function AppSidebar({ user }: { user: User }) {
 
   const matchRoute = useMatchRoute();
   const navigate = useNavigate();
+
+  const { activePlan, setActivePlan } = useContext(
+    PlanContext
+  ) as PlanContextType;
+
+  useEffect(() => {
+    if (!activePlan && plans.data?.length) {
+      setActivePlan(plans.data[0]);
+    }
+  }, [activePlan, plans.data, setActivePlan]);
 
   if (plans.isLoading) {
     return (
@@ -147,8 +159,7 @@ export function AppSidebar({ user }: { user: User }) {
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuButton>
                     <FileBarChart2Icon />
-                    {/* TODO: Add logic to display selected plan name here */}
-                    {plans.data?.[0]?.eventname || 'Event'}
+                    {activePlan?.eventname || 'Select a plan'}
                     <ChevronUpIcon className='ml-auto' />
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
@@ -161,7 +172,10 @@ export function AppSidebar({ user }: { user: User }) {
                   </DropdownMenuItem>
                   <Separator className='my-1' />
                   {plans.data!.map((plan: Plan) => (
-                    <DropdownMenuItem key={plan.id}>
+                    <DropdownMenuItem
+                      key={plan.id}
+                      onClick={() => setActivePlan(plan)}
+                    >
                       {plan.eventname}
                     </DropdownMenuItem>
                   ))}

@@ -16,6 +16,14 @@ export type Plan = {
   url: string;
   pin: number | undefined;
   status: 'canceled' | 'active' | 'paused';
+  images: {
+    id: string;
+    planid: string;
+    guestname: string;
+    imagename: string;
+    imageurl: string;
+    createdat: Date;
+  }[];
   enddate: string;
   nextbillingdate: string;
   createdat: string;

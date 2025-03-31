@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 
@@ -15,6 +16,7 @@ export const Route = createFileRoute('/_authenticated/plans')({
 
 function RouteComponent() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [error, setError] = useState<string | null>(null);
 
@@ -27,6 +29,7 @@ function RouteComponent() {
       body: JSON.stringify({ plan }),
     });
     if (res.ok) {
+      queryClient.invalidateQueries({ queryKey: ['plans'] });
       navigate({ to: '/dashboard' });
     } else {
       const errorMessage = await res.json();
