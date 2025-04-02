@@ -22,6 +22,7 @@ export type Plan = {
     guestname: string;
     imagename: string;
     imageurl: string;
+    imagesize: number;
     createdat: Date;
   }[];
   guests: string[];

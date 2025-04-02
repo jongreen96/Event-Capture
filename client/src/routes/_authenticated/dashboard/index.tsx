@@ -1,12 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlanContext, type PlanContextType } from '@/routes/_authenticated';
 import { createFileRoute } from '@tanstack/react-router';
-import {
-  ChartColumnIcon,
-  FileBarChart2Icon,
-  ImageIcon,
-  UserIcon,
-} from 'lucide-react';
+import { ImageIcon } from 'lucide-react';
 import { useContext } from 'react';
 
 export const Route = createFileRoute('/_authenticated/dashboard/')({
@@ -23,53 +18,74 @@ function RouteComponent() {
   return (
     <>
       <section className='grid grid-cols-2 @3xl:grid-cols-4 gap-4'>
-        <Card>
+        <Card className='gap-0'>
           <CardHeader>
-            <CardTitle className='flex items-center gap-2'>
-              <ImageIcon className='size-4' />
-              Photos
+            <CardTitle className='flex items-center justify-between'>
+              <div className='flex items-center gap-2'>
+                <ImageIcon className='size-4' />
+                Photos
+              </div>
+              <span className='text-xl text-right font-semibold'>
+                {activePlan?.images.length}
+              </span>
             </CardTitle>
           </CardHeader>
 
-          <CardContent>
-            <p>{activePlan?.images.length}</p>
-          </CardContent>
+          <CardContent></CardContent>
         </Card>
-        <Card>
+
+        <Card className='gap-0'>
           <CardHeader>
-            <CardTitle className='flex items-center gap-2'>
-              <UserIcon className='size-4' />
-              Guests
+            <CardTitle className='flex justify-between'>
+              <div className='flex items-center gap-2'>
+                <ImageIcon className='size-4' />
+                Guests
+              </div>
+              <span className='text-xl text-right font-semibold'>
+                {activePlan?.guests.length}
+              </span>
             </CardTitle>
           </CardHeader>
 
-          <CardContent>
-            <p>{activePlan.guests.length}</p>
-          </CardContent>
+          <CardContent></CardContent>
         </Card>
-        <Card>
+
+        <Card className='gap-0'>
           <CardHeader>
-            <CardTitle className='flex items-center gap-2'>
-              <ChartColumnIcon className='size-4' />
-              Usage
+            <CardTitle className='flex items-center justify-between'>
+              <div className='flex items-center gap-2'>
+                <ImageIcon className='size-4' />
+                Usage
+              </div>
+              <span className='text-xl text-right font-semibold'>
+                {(
+                  activePlan.images.reduce(
+                    (acc, image) => acc + image.imagesize,
+                    0
+                  ) / 1_048_578
+                ).toFixed(2)}{' '}
+                GB
+              </span>
             </CardTitle>
           </CardHeader>
 
-          <CardContent>
-            <p>{/* TODO */}</p>
-          </CardContent>
+          <CardContent></CardContent>
         </Card>
-        <Card>
+
+        <Card className='gap-0'>
           <CardHeader>
-            <CardTitle className='flex items-center gap-2'>
-              <FileBarChart2Icon className='size-4' />
-              Plan
+            <CardTitle className='flex items-center justify-between'>
+              <div className='flex items-center gap-2'>
+                <ImageIcon className='size-4' />
+                Plan
+              </div>
+              <span className='text-xl text-right font-semibold'>
+                {activePlan?.plan}
+              </span>
             </CardTitle>
           </CardHeader>
 
-          <CardContent>
-            <p>{activePlan?.plan}</p>
-          </CardContent>
+          <CardContent></CardContent>
         </Card>
       </section>
     </>
