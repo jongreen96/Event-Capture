@@ -1,6 +1,7 @@
+import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlanContext, type PlanContextType } from '@/routes/_authenticated';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { ImageIcon } from 'lucide-react';
 import { useContext } from 'react';
 
@@ -63,7 +64,7 @@ function RouteComponent() {
                     (acc, image) => acc + image.imagesize,
                     0
                   ) / 1_048_578
-                ).toFixed(2)}{' '}
+                ).toFixed(1)}{' '}
                 GB
               </span>
             </CardTitle>
@@ -86,6 +87,49 @@ function RouteComponent() {
           </CardHeader>
 
           <CardContent></CardContent>
+        </Card>
+      </section>
+
+      <section className='grid gap-4 @3xl:grid-cols-[2fr_1fr]'>
+        <Card className='shadow-none border-0 @container/ic'>
+          <CardHeader>
+            <CardTitle className='flex items-center justify-between'>
+              Photos
+              <Link
+                to='/dashboard/photos'
+                className={buttonVariants({ variant: 'outline' })}
+              >
+                View All
+              </Link>
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent className='grid gap-2 grid-cols-2 @xs/ic:grid-cols-3 @md/ic:grid-cols-4 @xl/ic:grid-cols-5 @2xl/ic:grid-cols-6'>
+            {activePlan.images.map((image) => (
+              <Link to={`/dashboard/photos/${image.id}`}>
+                <Card className='p-0 overflow-hidden aspect-square'>
+                  <img
+                    src='https://picsum.photos/200'
+                    alt={image.imagename}
+                    className='size-full object-cover object-center'
+                  />
+                </Card>
+              </Link>
+            ))}
+          </CardContent>
+        </Card>
+        <Card className='shadow-none border-0'>
+          <CardHeader>
+            <CardTitle className='flex items-center justify-between'>
+              Guests
+              <Link
+                to='/dashboard/guests'
+                className={buttonVariants({ variant: 'outline' })}
+              >
+                View All
+              </Link>
+            </CardTitle>
+          </CardHeader>
         </Card>
       </section>
     </>
