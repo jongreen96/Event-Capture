@@ -5,7 +5,7 @@ import {
   redirect,
   useNavigate,
 } from '@tanstack/react-router';
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import type { Plan } from '../../../src/utils/types';
 
 export type PlanContextType = {
@@ -35,7 +35,18 @@ function RouteComponent() {
   const { session } = Route.useRouteContext();
   if (!session) navigate({ to: '/sign-in', search: { error: undefined } });
 
-  const [activePlan, setActivePlan] = useState<null | Plan>(null);
+  const [activePlan, setActivePlan] = useState<null | Plan>(() => {
+    const stored = sessionStorage.getItem('activePlan');
+    return stored ? JSON.parse(stored) : null;
+  });
+
+  useEffect(() => {
+    if (activePlan) {
+      sessionStorage.setItem('activePlan', JSON.stringify(activePlan));
+    } else {
+      sessionStorage.removeItem('activePlan');
+    }
+  }, [activePlan]);
 
   return (
     <PlanContext.Provider value={{ activePlan, setActivePlan }}>
