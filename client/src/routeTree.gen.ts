@@ -18,8 +18,9 @@ import { Route as IndexImport } from './routes/index'
 import { Route as AuthenticatedPlansImport } from './routes/_authenticated/plans'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard/route'
 import { Route as AuthenticatedDashboardIndexImport } from './routes/_authenticated/dashboard/index'
-import { Route as AuthenticatedDashboardPhotosImport } from './routes/_authenticated/dashboard/photos'
 import { Route as AuthenticatedDashboardGuestsImport } from './routes/_authenticated/dashboard/guests'
+import { Route as AuthenticatedDashboardPhotosIndexImport } from './routes/_authenticated/dashboard/photos/index'
+import { Route as AuthenticatedDashboardPhotosPhotoIdImport } from './routes/_authenticated/dashboard/photos/$photoId'
 
 // Create/Update Routes
 
@@ -66,17 +67,24 @@ const AuthenticatedDashboardIndexRoute =
     getParentRoute: () => AuthenticatedDashboardRouteRoute,
   } as any)
 
-const AuthenticatedDashboardPhotosRoute =
-  AuthenticatedDashboardPhotosImport.update({
-    id: '/photos',
-    path: '/photos',
-    getParentRoute: () => AuthenticatedDashboardRouteRoute,
-  } as any)
-
 const AuthenticatedDashboardGuestsRoute =
   AuthenticatedDashboardGuestsImport.update({
     id: '/guests',
     path: '/guests',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any)
+
+const AuthenticatedDashboardPhotosIndexRoute =
+  AuthenticatedDashboardPhotosIndexImport.update({
+    id: '/photos/',
+    path: '/photos/',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any)
+
+const AuthenticatedDashboardPhotosPhotoIdRoute =
+  AuthenticatedDashboardPhotosPhotoIdImport.update({
+    id: '/photos/$photoId',
+    path: '/photos/$photoId',
     getParentRoute: () => AuthenticatedDashboardRouteRoute,
   } as any)
 
@@ -133,18 +141,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardGuestsImport
       parentRoute: typeof AuthenticatedDashboardRouteImport
     }
-    '/_authenticated/dashboard/photos': {
-      id: '/_authenticated/dashboard/photos'
-      path: '/photos'
-      fullPath: '/dashboard/photos'
-      preLoaderRoute: typeof AuthenticatedDashboardPhotosImport
-      parentRoute: typeof AuthenticatedDashboardRouteImport
-    }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
       path: '/'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof AuthenticatedDashboardIndexImport
+      parentRoute: typeof AuthenticatedDashboardRouteImport
+    }
+    '/_authenticated/dashboard/photos/$photoId': {
+      id: '/_authenticated/dashboard/photos/$photoId'
+      path: '/photos/$photoId'
+      fullPath: '/dashboard/photos/$photoId'
+      preLoaderRoute: typeof AuthenticatedDashboardPhotosPhotoIdImport
+      parentRoute: typeof AuthenticatedDashboardRouteImport
+    }
+    '/_authenticated/dashboard/photos/': {
+      id: '/_authenticated/dashboard/photos/'
+      path: '/photos'
+      fullPath: '/dashboard/photos'
+      preLoaderRoute: typeof AuthenticatedDashboardPhotosIndexImport
       parentRoute: typeof AuthenticatedDashboardRouteImport
     }
   }
@@ -154,15 +169,19 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedDashboardRouteRouteChildren {
   AuthenticatedDashboardGuestsRoute: typeof AuthenticatedDashboardGuestsRoute
-  AuthenticatedDashboardPhotosRoute: typeof AuthenticatedDashboardPhotosRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
+  AuthenticatedDashboardPhotosPhotoIdRoute: typeof AuthenticatedDashboardPhotosPhotoIdRoute
+  AuthenticatedDashboardPhotosIndexRoute: typeof AuthenticatedDashboardPhotosIndexRoute
 }
 
 const AuthenticatedDashboardRouteRouteChildren: AuthenticatedDashboardRouteRouteChildren =
   {
     AuthenticatedDashboardGuestsRoute: AuthenticatedDashboardGuestsRoute,
-    AuthenticatedDashboardPhotosRoute: AuthenticatedDashboardPhotosRoute,
     AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
+    AuthenticatedDashboardPhotosPhotoIdRoute:
+      AuthenticatedDashboardPhotosPhotoIdRoute,
+    AuthenticatedDashboardPhotosIndexRoute:
+      AuthenticatedDashboardPhotosIndexRoute,
   }
 
 const AuthenticatedDashboardRouteRouteWithChildren =
@@ -193,8 +212,9 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/plans': typeof AuthenticatedPlansRoute
   '/dashboard/guests': typeof AuthenticatedDashboardGuestsRoute
-  '/dashboard/photos': typeof AuthenticatedDashboardPhotosRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/dashboard/photos/$photoId': typeof AuthenticatedDashboardPhotosPhotoIdRoute
+  '/dashboard/photos': typeof AuthenticatedDashboardPhotosIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -204,8 +224,9 @@ export interface FileRoutesByTo {
   '/welcome': typeof WelcomeRoute
   '/plans': typeof AuthenticatedPlansRoute
   '/dashboard/guests': typeof AuthenticatedDashboardGuestsRoute
-  '/dashboard/photos': typeof AuthenticatedDashboardPhotosRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
+  '/dashboard/photos/$photoId': typeof AuthenticatedDashboardPhotosPhotoIdRoute
+  '/dashboard/photos': typeof AuthenticatedDashboardPhotosIndexRoute
 }
 
 export interface FileRoutesById {
@@ -217,8 +238,9 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/_authenticated/plans': typeof AuthenticatedPlansRoute
   '/_authenticated/dashboard/guests': typeof AuthenticatedDashboardGuestsRoute
-  '/_authenticated/dashboard/photos': typeof AuthenticatedDashboardPhotosRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/_authenticated/dashboard/photos/$photoId': typeof AuthenticatedDashboardPhotosPhotoIdRoute
+  '/_authenticated/dashboard/photos/': typeof AuthenticatedDashboardPhotosIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -231,8 +253,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/plans'
     | '/dashboard/guests'
-    | '/dashboard/photos'
     | '/dashboard/'
+    | '/dashboard/photos/$photoId'
+    | '/dashboard/photos'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -241,8 +264,9 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/plans'
     | '/dashboard/guests'
-    | '/dashboard/photos'
     | '/dashboard'
+    | '/dashboard/photos/$photoId'
+    | '/dashboard/photos'
   id:
     | '__root__'
     | '/'
@@ -252,8 +276,9 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/plans'
     | '/_authenticated/dashboard/guests'
-    | '/_authenticated/dashboard/photos'
     | '/_authenticated/dashboard/'
+    | '/_authenticated/dashboard/photos/$photoId'
+    | '/_authenticated/dashboard/photos/'
   fileRoutesById: FileRoutesById
 }
 
@@ -308,8 +333,9 @@ export const routeTree = rootRoute
       "parent": "/_authenticated",
       "children": [
         "/_authenticated/dashboard/guests",
-        "/_authenticated/dashboard/photos",
-        "/_authenticated/dashboard/"
+        "/_authenticated/dashboard/",
+        "/_authenticated/dashboard/photos/$photoId",
+        "/_authenticated/dashboard/photos/"
       ]
     },
     "/_authenticated/plans": {
@@ -320,12 +346,16 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/dashboard/guests.tsx",
       "parent": "/_authenticated/dashboard"
     },
-    "/_authenticated/dashboard/photos": {
-      "filePath": "_authenticated/dashboard/photos.tsx",
-      "parent": "/_authenticated/dashboard"
-    },
     "/_authenticated/dashboard/": {
       "filePath": "_authenticated/dashboard/index.tsx",
+      "parent": "/_authenticated/dashboard"
+    },
+    "/_authenticated/dashboard/photos/$photoId": {
+      "filePath": "_authenticated/dashboard/photos/$photoId.tsx",
+      "parent": "/_authenticated/dashboard"
+    },
+    "/_authenticated/dashboard/photos/": {
+      "filePath": "_authenticated/dashboard/photos/index.tsx",
       "parent": "/_authenticated/dashboard"
     }
   }

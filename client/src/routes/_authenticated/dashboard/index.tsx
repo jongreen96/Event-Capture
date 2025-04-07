@@ -1,5 +1,14 @@
 import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { formatImageSize } from '@/lib/utils';
 import { PlanContext, type PlanContextType } from '@/routes/_authenticated';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ImageIcon } from 'lucide-react';
@@ -11,10 +20,10 @@ export const Route = createFileRoute('/_authenticated/dashboard/')({
 
 function RouteComponent() {
   const { activePlan } = useContext(PlanContext) as PlanContextType;
+  if (!activePlan) return <p>Error loading plans.</p>;
 
-  if (!activePlan) {
-    return <p>Error loading plans.</p>;
-  }
+  const photosVisible = 23;
+  const guestsVisible = 10;
 
   return (
     <>
@@ -59,13 +68,12 @@ function RouteComponent() {
                 Usage
               </div>
               <span className='text-xl text-right font-semibold'>
-                {(
+                {formatImageSize(
                   activePlan.images.reduce(
                     (acc, image) => acc + image.imagesize,
                     0
-                  ) / 1_048_578
-                ).toFixed(1)}{' '}
-                GB
+                  )
+                )}
               </span>
             </CardTitle>
           </CardHeader>
@@ -105,8 +113,12 @@ function RouteComponent() {
           </CardHeader>
 
           <CardContent className='grid gap-2 grid-cols-2 @xs/ic:grid-cols-3 @md/ic:grid-cols-4 @xl/ic:grid-cols-5 @2xl/ic:grid-cols-6'>
-            {activePlan.images.map((image) => (
-              <Link to={`/dashboard/photos/${image.id}`}>
+            {activePlan.images.slice(0, photosVisible).map((image) => (
+              <Link
+                to={`/dashboard/photos/$photoId`}
+                params={{ photoId: image.id }}
+                key={image.id}
+              >
                 <Card className='p-0 overflow-hidden aspect-square'>
                   <img
                     src='https://picsum.photos/200'
@@ -116,8 +128,21 @@ function RouteComponent() {
                 </Card>
               </Link>
             ))}
+
+            {activePlan.images.length > photosVisible && (
+              <Link
+                to='/dashboard/photos'
+                className={buttonVariants({
+                  variant: 'ghost',
+                  className: 'h-full text-muted-foreground',
+                })}
+              >
+                + {activePlan.images.length - photosVisible} more
+              </Link>
+            )}
           </CardContent>
         </Card>
+
         <Card className='shadow-none border-0'>
           <CardHeader>
             <CardTitle className='flex items-center justify-between'>
@@ -130,6 +155,72 @@ function RouteComponent() {
               </Link>
             </CardTitle>
           </CardHeader>
+
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead className='text-right'>Photos</TableHead>
+                  <TableHead className='text-right'>Usage</TableHead>
+                </TableRow>
+              </TableHeader>
+
+              <TableBody>
+                {activePlan.guests.slice(0, guestsVisible).map((guest) => (
+                  <TableRow key={guest}>
+                    <TableCell className='overflow-clip max-w-1'>
+                      {guest}
+                    </TableCell>
+                    <TableCell className='text-right'>
+                      {
+                        activePlan.images.filter(
+                          (image) => image.guestname === guest
+                        ).length
+                      }
+                    </TableCell>
+                    <TableCell className='text-right'>
+                      {formatImageSize(
+                        activePlan.images
+                          .filter((image) => image.guestname === guest)
+                          .reduce((acc, image) => acc + image.imagesize, 0)
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+
+                {activePlan.guests.length > guestsVisible && (
+                  <TableRow>
+                    <TableCell className='text-muted-foreground'>
+                      + {activePlan.guests.length - guestsVisible} more
+                    </TableCell>
+                    <TableCell className='text-right text-muted-foreground'>
+                      {
+                        activePlan.images.filter(
+                          (image) =>
+                            !activePlan.guests
+                              .slice(0, guestsVisible)
+                              .includes(image.guestname)
+                        ).length
+                      }
+                    </TableCell>
+                    <TableCell className='text-right text-muted-foreground'>
+                      {formatImageSize(
+                        activePlan.images
+                          .filter(
+                            (image) =>
+                              !activePlan.guests
+                                .slice(0, guestsVisible)
+                                .includes(image.guestname)
+                          )
+                          .reduce((acc, image) => acc + image.imagesize, 0)
+                      )}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
         </Card>
       </section>
     </>
