@@ -72,7 +72,8 @@ function RouteComponent() {
                   activePlan.images.reduce(
                     (acc, image) => acc + image.imagesize,
                     0
-                  )
+                  ),
+                  2
                 )}
               </span>
             </CardTitle>
@@ -133,7 +134,7 @@ function RouteComponent() {
               <Link
                 to='/dashboard/photos'
                 className={buttonVariants({
-                  variant: 'ghost',
+                  variant: 'outline',
                   className: 'h-full text-muted-foreground',
                 })}
               >
@@ -183,7 +184,8 @@ function RouteComponent() {
                       {formatImageSize(
                         activePlan.images
                           .filter((image) => image.guestname === guest)
-                          .reduce((acc, image) => acc + image.imagesize, 0)
+                          .reduce((acc, image) => acc + image.imagesize, 0),
+                        1
                       )}
                     </TableCell>
                   </TableRow>
@@ -213,7 +215,8 @@ function RouteComponent() {
                                 .slice(0, guestsVisible)
                                 .includes(image.guestname)
                           )
-                          .reduce((acc, image) => acc + image.imagesize, 0)
+                          .reduce((acc, image) => acc + image.imagesize, 0),
+                        1
                       )}
                     </TableCell>
                   </TableRow>
