@@ -1,17 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlanContext, type PlanContextType } from '@/routes/_authenticated';
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
 import { useContext } from 'react';
 
-export const Route = createFileRoute('/_authenticated/dashboard/photos/')({
+export const Route = createFileRoute('/_authenticated/dashboard/photos')({
   component: RouteComponent,
 });
 
 function RouteComponent() {
   const { activePlan } = useContext(PlanContext) as PlanContextType;
-  if (!activePlan) {
-    return <p>Error loading plans.</p>;
-  }
+  if (!activePlan) return <p>Error loading plans.</p>;
 
   return (
     <Card className='shadow-none border-0 @container/ic'>
@@ -24,10 +22,11 @@ function RouteComponent() {
           <Link
             to={`/dashboard/photos/$photoId`}
             params={{ photoId: image.id }}
+            key={image.id}
           >
             <Card className='p-0 overflow-hidden aspect-square'>
               <img
-                src='https://picsum.photos/200'
+                src={image.imageurl}
                 alt={image.imagename}
                 className='size-full object-cover object-center'
               />
@@ -35,6 +34,8 @@ function RouteComponent() {
           </Link>
         ))}
       </CardContent>
+
+      <Outlet />
     </Card>
   );
 }
