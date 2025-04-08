@@ -49,7 +49,7 @@ function RouteComponent() {
           <img
             src={image.imageurl}
             alt={image.imagename}
-            className='w-full h-full object-contain'
+            className='w-full h-full object-contain rounded'
           />
         </div>
       </DialogContent>

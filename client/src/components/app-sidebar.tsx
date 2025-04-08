@@ -159,7 +159,9 @@ export function AppSidebar({ user }: { user: User }) {
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuButton>
                     <FileBarChart2Icon />
-                    {activePlan?.eventname || 'Select a plan'}
+                    <p className='truncate'>
+                      {activePlan?.eventname || 'Select a plan'}
+                    </p>
                     <ChevronUpIcon className='ml-auto' />
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
@@ -204,7 +206,9 @@ export function AppSidebar({ user }: { user: User }) {
 
                       <div className='text-left -space-y-1 overflow-hidden'>
                         <p>{user.name}</p>
-                        <p className='text-xs text-gray-500'>{user.email}</p>
+                        <p className='text-xs text-gray-500 truncate'>
+                          {user.email}
+                        </p>
                       </div>
                       <ChevronUpIcon className='ml-auto size-4' />
                     </div>
