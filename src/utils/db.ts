@@ -9,6 +9,7 @@ export async function getPlans(userId: string) {
     SELECT id, plan, eventname, pauseduploads, url, pin, status, enddate, nextbillingdate, createdat
     FROM plan
     WHERE userid = $1
+    ORDER BY createdat DESC
     `,
     [userId]
   );
@@ -19,7 +20,9 @@ export async function getPlans(userId: string) {
 
   const images = await db.query(
     `
-    SELECT * FROM images WHERE planid = ANY($1)
+    SELECT * FROM images
+    WHERE planid = ANY($1)
+    ORDER BY createdat DESC
     `,
     [planIds]
   );
