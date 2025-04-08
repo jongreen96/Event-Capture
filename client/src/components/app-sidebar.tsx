@@ -95,13 +95,13 @@ export function AppSidebar({ user }: { user: User }) {
   }
 
   return (
-    <Sidebar variant='sidebar' className='select-none overflow-hidden'>
+    <Sidebar variant='sidebar' className='select-none overflow-hidden z-50'>
       <SidebarHeader className='flex flex-row items-center justify-between'>
         <p className='font-semibold text-2xl'>Event Capture</p>
         <SidebarTrigger />
       </SidebarHeader>
 
-      <SidebarSeparator className='ml-0 scale-110' />
+      <SidebarSeparator className='ml-0' />
 
       <SidebarContent>
         <SidebarGroup>
@@ -148,10 +148,10 @@ export function AppSidebar({ user }: { user: User }) {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarSeparator className='ml-0 scale-110' />
+      <SidebarSeparator className='ml-0' />
 
-      <SidebarFooter>
-        <SidebarGroup className='p-0'>
+      <SidebarFooter className='p-0'>
+        <SidebarGroup>
           <SidebarGroupLabel>Plans</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
@@ -187,9 +187,9 @@ export function AppSidebar({ user }: { user: User }) {
           </SidebarMenu>
         </SidebarGroup>
 
-        <SidebarSeparator className='ml-0 scale-110' />
+        <SidebarSeparator className='ml-0' />
 
-        <SidebarGroup className='p-0'>
+        <SidebarGroup>
           <SidebarGroupLabel>Account</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
