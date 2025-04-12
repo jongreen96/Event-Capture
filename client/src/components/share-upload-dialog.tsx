@@ -12,7 +12,7 @@ import { Input } from './ui/input';
 
 export default function ShareUploadDialog({ url }: { url: string }) {
   // TODO: Remove hardcoded URL
-  const link = process.env.REACT_APP_UPLOAD_URL + url;
+  const link = 'http://localhost:5173/upload/' + url;
 
   // TODO: Add QR code
 
