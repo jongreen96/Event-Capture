@@ -10,8 +10,8 @@ import {
 } from '@/components/ui/table';
 import { formatImageSize } from '@/lib/utils';
 import { PlanContext, type PlanContextType } from '@/routes/_authenticated';
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { ImageIcon, LockIcon, LockOpenIcon, SettingsIcon } from 'lucide-react';
+import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
+import { LockIcon, LockOpenIcon, SettingsIcon } from 'lucide-react';
 import { useContext } from 'react';
 
 export const Route = createFileRoute('/_authenticated/dashboard/')({
@@ -27,107 +27,81 @@ function RouteComponent() {
 
   return (
     <>
-      <section className='grid grid-cols-2 @3xl:grid-cols-4 gap-4'>
-        <Card className='gap-0'>
-          <CardHeader>
-            <CardTitle className='flex items-center justify-between'>
-              <div className='flex items-center gap-2'>
-                <ImageIcon className='size-4' />
-                Photos
-              </div>
-              <span className='text-xl text-right font-semibold'>
-                {activePlan?.images.length}
-              </span>
-            </CardTitle>
-          </CardHeader>
-
-          <CardContent></CardContent>
-        </Card>
-
-        <Card className='gap-0'>
-          <CardHeader>
-            <CardTitle className='flex justify-between'>
-              <div className='flex items-center gap-2'>
-                <ImageIcon className='size-4' />
-                Guests
-              </div>
-              <span className='text-xl text-right font-semibold'>
-                {activePlan?.guests.length}
-              </span>
-            </CardTitle>
-          </CardHeader>
-
-          <CardContent></CardContent>
-        </Card>
-
-        <Card className='gap-0'>
-          <CardHeader>
-            <CardTitle className='flex items-center justify-between'>
-              <div className='flex items-center gap-2'>
-                <ImageIcon className='size-4' />
-                Usage
-              </div>
-              <span className='text-xl text-right font-semibold'>
-                {formatImageSize(
-                  activePlan.images.reduce(
-                    (acc, image) => acc + image.imagesize,
-                    0
-                  ),
-                  2
-                )}
-              </span>
-            </CardTitle>
-          </CardHeader>
-
-          <CardContent></CardContent>
-        </Card>
-
-        <Card className='gap-0'>
-          <CardHeader>
-            <CardTitle className='flex items-center justify-between'>
-              <div className='flex items-center gap-2'>
-                <ImageIcon className='size-4' />
-                Plan
-              </div>
-              <span className='text-xl text-right font-semibold'>
-                {activePlan?.plan}
-              </span>
-            </CardTitle>
-          </CardHeader>
-
-          <CardContent></CardContent>
-        </Card>
-      </section>
-
       <section>
-        <Card className='bg-sidebar shadow-none p-2 '>
-          <CardHeader className='flex items-center justify-between p-0 pl-2 gap-2'>
-            <CardTitle className='capitalize overflow-ellipsis'>
-              {activePlan?.eventname}
-            </CardTitle>
+        <div className='flex items-center justify-between p-0 pl-2 gap-2'>
+          <p className='capitalize overflow-ellipsis font-semibold text-xl md:text-2xl lg:text-3xl line-clamp-2'>
+            {activePlan?.eventname}
+          </p>
 
-            <div className='flex gap-2 items-center'>
-              <div className='flex gap-2 items-center opacity-50'>
-                {activePlan.pin ? (
-                  <LockIcon className='size-4 text-green-500' />
-                ) : (
-                  <LockOpenIcon className='size-4 text-red-500' />
-                )}
-              </div>
-
-              <Button size='icon' variant='outline'>
-                <SettingsIcon />
-              </Button>
-
-              <Button>Share Link</Button>
+          <div className='flex gap-2 items-center'>
+            <div className='flex gap-2 items-center opacity-50'>
+              {activePlan.pin ? (
+                <LockIcon className='size-4 text-green-500' />
+              ) : (
+                <LockOpenIcon className='size-4 text-red-500' />
+              )}
             </div>
+
+            <Button size='icon' variant='outline'>
+              <SettingsIcon />
+            </Button>
+
+            <Button>Share Link</Button>
+          </div>
+        </div>
+      </section>
+
+      <section className='grid grid-cols-2 @3xl:grid-cols-4 gap-4 text-center'>
+        <Card className='gap-2'>
+          <CardHeader>
+            <CardTitle>Photos</CardTitle>
           </CardHeader>
+
+          <CardContent className='text-3xl text-center font-semibold'>
+            {activePlan?.images.length}
+          </CardContent>
+        </Card>
+
+        <Card className='gap-2'>
+          <CardHeader>
+            <CardTitle>Guests</CardTitle>
+          </CardHeader>
+
+          <CardContent className='text-3xl text-center font-semibold'>
+            {activePlan?.guests.length}
+          </CardContent>
+        </Card>
+
+        <Card className='gap-2'>
+          <CardHeader>
+            <CardTitle>Usage</CardTitle>
+          </CardHeader>
+
+          <CardContent className='text-3xl text-center font-semibold'>
+            {formatImageSize(
+              activePlan.images.reduce(
+                (acc, image) => acc + image.imagesize,
+                0
+              ),
+              2
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className='gap-2'>
+          <CardHeader>
+            <CardTitle>Plan</CardTitle>
+          </CardHeader>
+
+          <CardContent className='text-3xl text-center font-semibold capitalize'>
+            {activePlan?.plan}
+          </CardContent>
         </Card>
       </section>
 
-      <section className='grid gap-4 @3xl:grid-cols-[2fr_1fr]'>
+      <section className='grid gap-10 @3xl:grid-cols-[2fr_1fr]'>
         <Card className='shadow-none border-0 @container/ic'>
-          <CardHeader>
+          <CardHeader className='px-0'>
             <CardTitle className='flex items-center justify-between'>
               Photos
               <Link
@@ -139,7 +113,7 @@ function RouteComponent() {
             </CardTitle>
           </CardHeader>
 
-          <CardContent className='grid gap-2 grid-cols-2 @xs/ic:grid-cols-3 @md/ic:grid-cols-4 @xl/ic:grid-cols-5 @2xl/ic:grid-cols-6'>
+          <CardContent className='grid px-0 gap-2 grid-cols-2 @2xs/ic:grid-cols-3 @sm/ic:grid-cols-4 @xl/ic:grid-cols-5 @2xl/ic:grid-cols-6'>
             {activePlan.images.slice(0, photosVisible).map((image) => (
               <Link
                 to={`/dashboard/photos/$photoId`}
@@ -171,7 +145,7 @@ function RouteComponent() {
         </Card>
 
         <Card className='shadow-none border-0'>
-          <CardHeader>
+          <CardHeader className='px-0'>
             <CardTitle className='flex items-center justify-between'>
               Guests
               <Link
@@ -183,7 +157,7 @@ function RouteComponent() {
             </CardTitle>
           </CardHeader>
 
-          <CardContent>
+          <CardContent className='px-0'>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -250,6 +224,8 @@ function RouteComponent() {
           </CardContent>
         </Card>
       </section>
+
+      <Outlet />
     </>
   );
 }
