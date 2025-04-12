@@ -1,3 +1,4 @@
+import ShareUploadDialog from '@/components/share-upload-dialog';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -11,7 +12,7 @@ import {
 import { formatImageSize } from '@/lib/utils';
 import { PlanContext, type PlanContextType } from '@/routes/_authenticated';
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
-import { LockIcon, LockOpenIcon, SettingsIcon } from 'lucide-react';
+import { SettingsIcon } from 'lucide-react';
 import { useContext } from 'react';
 
 export const Route = createFileRoute('/_authenticated/dashboard/')({
@@ -29,24 +30,24 @@ function RouteComponent() {
     <>
       <section>
         <div className='flex items-center justify-between p-0 pl-2 gap-2'>
-          <p className='capitalize overflow-ellipsis font-semibold text-xl md:text-2xl lg:text-3xl line-clamp-2'>
+          <p className='capitalize overflow-ellipsis font-semibold text-xl md:text-2xl lg:text-3xl line-clamp-3'>
             {activePlan?.eventname}
           </p>
 
           <div className='flex gap-2 items-center'>
-            <div className='flex gap-2 items-center opacity-50'>
+            {/* <div className='flex gap-2 items-center opacity-50'>
               {activePlan.pin ? (
                 <LockIcon className='size-4 text-green-500' />
               ) : (
                 <LockOpenIcon className='size-4 text-red-500' />
               )}
-            </div>
+            </div> */}
 
             <Button size='icon' variant='outline'>
               <SettingsIcon />
             </Button>
 
-            <Button>Share Link</Button>
+            <ShareUploadDialog url={activePlan.url} />
           </div>
         </div>
       </section>
