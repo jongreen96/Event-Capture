@@ -1,9 +1,32 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { buttonVariants } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { ChevronLeft } from 'lucide-react';
 
 export const Route = createFileRoute('/_authenticated/dashboard/guests')({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
-  return <div>Hello "/_authenticated/dashboard/guests"!</div>
+  return (
+    <Card className='shadow-none border-0 @container/ic'>
+      <CardHeader className='space-y-2'>
+        <Link
+          to='/dashboard'
+          className={buttonVariants({
+            variant: 'outline',
+            className: 'w-fit -mt-14',
+          })}
+        >
+          <ChevronLeft />
+          Overview
+        </Link>
+        <CardTitle>All Guests</CardTitle>
+      </CardHeader>
+
+      <CardContent className='grid gap-2 grid-cols-2 @xs/ic:grid-cols-3 @md/ic:grid-cols-4 @xl/ic:grid-cols-5 @2xl/ic:grid-cols-6 @4xl/ic:grid-cols-8 @6xl/ic:grid-cols-10'>
+        guests
+      </CardContent>
+    </Card>
+  );
 }

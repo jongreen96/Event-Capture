@@ -1,6 +1,8 @@
+import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlanContext, type PlanContextType } from '@/routes/_authenticated';
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
+import { ChevronLeft } from 'lucide-react';
 import { useContext } from 'react';
 
 export const Route = createFileRoute('/_authenticated/dashboard/photos')({
@@ -13,7 +15,17 @@ function RouteComponent() {
 
   return (
     <Card className='shadow-none border-0 @container/ic'>
-      <CardHeader>
+      <CardHeader className='space-y-2'>
+        <Link
+          to='/dashboard'
+          className={buttonVariants({
+            variant: 'outline',
+            className: 'w-fit -mt-14',
+          })}
+        >
+          <ChevronLeft />
+          Overview
+        </Link>
         <CardTitle>All Photos</CardTitle>
       </CardHeader>
 
