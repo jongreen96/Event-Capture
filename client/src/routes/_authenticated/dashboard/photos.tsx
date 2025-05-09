@@ -1,4 +1,3 @@
-import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlanContext, type PlanContextType } from '@/routes/_authenticated';
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
@@ -18,12 +17,9 @@ function RouteComponent() {
       <CardHeader className='space-y-2'>
         <Link
           to='/dashboard'
-          className={buttonVariants({
-            variant: 'outline',
-            className: 'w-fit -mt-14',
-          })}
+          className='flex items-center text-xs font-medium text-muted-foreground'
         >
-          <ChevronLeft />
+          <ChevronLeft className='size-4' />
           Overview
         </Link>
         <CardTitle>All Photos</CardTitle>
