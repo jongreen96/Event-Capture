@@ -1,3 +1,14 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -9,6 +20,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
 import {
   Table,
   TableBody,
@@ -28,6 +41,7 @@ import {
   Share2Icon,
 } from 'lucide-react';
 import { useContext } from 'react';
+import type { Plan } from '../../../../../src/utils/types';
 
 export const Route = createFileRoute('/_authenticated/dashboard/')({
   component: RouteComponent,
@@ -62,9 +76,7 @@ function RouteComponent() {
             </div>
 
             <div className='flex gap-2 items-center'>
-              <Button size='icon' variant='outline'>
-                <SettingsIcon />
-              </Button>
+              <PlanSettingsDialog activePlan={activePlan} />
 
               <ShareUploadDialog url={activePlan.url} />
             </div>
@@ -282,6 +294,91 @@ function RouteComponent() {
 
       <Outlet />
     </>
+  );
+}
+
+function PlanSettingsDialog({ activePlan }: { activePlan: Plan }) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant='outline' size='icon'>
+          <SettingsIcon />
+        </Button>
+      </DialogTrigger>
+
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Plan Settings</DialogTitle>
+          <DialogDescription>Change your plan settings here</DialogDescription>
+        </DialogHeader>
+
+        <Separator />
+
+        <div className='grid grid-cols-[1fr_min-content] gap-4'>
+          <div>
+            <h2 className=' font-semibold'>Pause uploads</h2>
+            <p className='text-xs text-muted-foreground'>
+              Pause uploads to your event. This will prevent any new images from
+              being uploaded, but will not affect any existing images.
+            </p>
+          </div>
+          <Switch
+            checked={activePlan.pauseduploads}
+            onCheckedChange={() => {
+              activePlan.pauseduploads = !activePlan.pauseduploads;
+            }}
+            className='self-center justify-self-center'
+          />
+
+          <div>
+            <h2 className=' font-semibold'>Change event name</h2>
+            <p className='text-xs text-muted-foreground'>
+              Change the name of your event. This will be visible to your
+              guests.
+            </p>
+          </div>
+          <Button variant='outline' className='self-center'>
+            Change Name
+          </Button>
+
+          <div>
+            <h2 className=' font-semibold'>Roll upload URL</h2>
+            <p className='text-xs text-muted-foreground'>
+              Generate a new upload URL / QR code for your event. This will
+              invalidate the current URL / QR code and generate a new one.
+            </p>
+          </div>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant='outline'
+                className='bg-destructive/25 hover:bg-destructive/50 self-center'
+              >
+                Roll URL
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will invalidate the current URL / QR code and generate a
+                  new one. Any guests with the old URL / QR code will no longer
+                  have access.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className='self-center' onClick={() => {}}>
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction className=' self-center'>
+                  Yes, roll URL
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
