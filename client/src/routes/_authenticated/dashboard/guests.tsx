@@ -1,3 +1,4 @@
+import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ChevronLeft } from 'lucide-react';
@@ -12,9 +13,12 @@ function RouteComponent() {
       <CardHeader className='space-y-2'>
         <Link
           to='/dashboard'
-          className='flex items-center text-xs font-medium text-muted-foreground'
+          className={buttonVariants({
+            variant: 'ghost',
+            className: 'w-fit -mt-14 -ml-4 text-muted-foreground',
+          })}
         >
-          <ChevronLeft className='size-4' />
+          <ChevronLeft />
           Overview
         </Link>
         <CardTitle>All Guests</CardTitle>

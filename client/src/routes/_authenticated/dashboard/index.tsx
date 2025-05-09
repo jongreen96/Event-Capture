@@ -1,6 +1,14 @@
-import ShareUploadDialog from '@/components/share-upload-dialog';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -12,7 +20,13 @@ import {
 import { formatImageSize } from '@/lib/utils';
 import { PlanContext, type PlanContextType } from '@/routes/_authenticated';
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
-import { SettingsIcon } from 'lucide-react';
+import {
+  LockIcon,
+  LockOpenIcon,
+  PauseIcon,
+  SettingsIcon,
+  Share2Icon,
+} from 'lucide-react';
 import { useContext } from 'react';
 
 export const Route = createFileRoute('/_authenticated/dashboard/')({
@@ -34,44 +48,54 @@ function RouteComponent() {
             {activePlan?.eventname}
           </p>
 
-          <div className='flex gap-2 items-center'>
-            {/* <div className='flex gap-2 items-center opacity-50'>
+          <div className='flex md:flex-row flex-col-reverse gap-2 items-center'>
+            <div className='flex gap-2 items-center opacity-50 w-full justify-end'>
               {activePlan.pin ? (
                 <LockIcon className='size-4 text-green-500' />
               ) : (
                 <LockOpenIcon className='size-4 text-red-500' />
               )}
-            </div> */}
 
-            <Button size='icon' variant='outline'>
-              <SettingsIcon />
-            </Button>
+              {activePlan.pauseduploads ? (
+                <PauseIcon className='size-4 text-green-500' />
+              ) : null}
+            </div>
 
-            <ShareUploadDialog url={activePlan.url} />
+            <div className='flex gap-2 items-center'>
+              <Button size='icon' variant='outline'>
+                <SettingsIcon />
+              </Button>
+
+              <ShareUploadDialog url={activePlan.url} />
+            </div>
           </div>
         </div>
       </section>
 
       <section className='grid grid-cols-2 @3xl:grid-cols-4 gap-4 text-center'>
-        <Card className='gap-2'>
-          <CardHeader>
-            <CardTitle>Photos</CardTitle>
-          </CardHeader>
+        <Link to='/dashboard/photos'>
+          <Card className='gap-2'>
+            <CardHeader>
+              <CardTitle>Photos</CardTitle>
+            </CardHeader>
 
-          <CardContent className='text-3xl text-center font-semibold'>
-            {activePlan?.images.length}
-          </CardContent>
-        </Card>
+            <CardContent className='text-3xl text-center font-semibold'>
+              {activePlan?.images.length}
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card className='gap-2'>
-          <CardHeader>
-            <CardTitle>Guests</CardTitle>
-          </CardHeader>
+        <Link to='/dashboard/guests'>
+          <Card className='gap-2'>
+            <CardHeader>
+              <CardTitle>Guests</CardTitle>
+            </CardHeader>
 
-          <CardContent className='text-3xl text-center font-semibold'>
-            {activePlan?.guests.length}
-          </CardContent>
-        </Card>
+            <CardContent className='text-3xl text-center font-semibold'>
+              {activePlan?.guests.length}
+            </CardContent>
+          </Card>
+        </Link>
 
         <Card className='gap-2'>
           <CardHeader>
@@ -169,26 +193,37 @@ function RouteComponent() {
               </TableHeader>
 
               <TableBody>
-                {activePlan.guests.slice(0, guestsVisible).map((guest) => (
-                  <TableRow key={guest}>
-                    <TableCell className='max-w-1 truncate'>{guest}</TableCell>
-                    <TableCell className='text-right'>
-                      {
-                        activePlan.images.filter(
-                          (image) => image.guestname === guest
-                        ).length
-                      }
-                    </TableCell>
-                    <TableCell className='text-right'>
-                      {formatImageSize(
-                        activePlan.images
-                          .filter((image) => image.guestname === guest)
-                          .reduce((acc, image) => acc + image.imagesize, 0),
-                        1
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {activePlan.guests
+                  .map((guest) => ({
+                    guest,
+                    usage: activePlan.images
+                      .filter((image) => image.guestname === guest)
+                      .reduce((acc, image) => acc + image.imagesize, 0),
+                  }))
+                  .sort((a, b) => b.usage - a.usage)
+                  .slice(0, guestsVisible)
+                  .map(({ guest }) => (
+                    <TableRow key={guest}>
+                      <TableCell className='max-w-1 truncate'>
+                        {guest}
+                      </TableCell>
+                      <TableCell className='text-right'>
+                        {
+                          activePlan.images.filter(
+                            (image) => image.guestname === guest
+                          ).length
+                        }
+                      </TableCell>
+                      <TableCell className='text-right'>
+                        {formatImageSize(
+                          activePlan.images
+                            .filter((image) => image.guestname === guest)
+                            .reduce((acc, image) => acc + image.imagesize, 0),
+                          1
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
 
                 {activePlan.guests.length > guestsVisible && (
                   <TableRow>
@@ -200,7 +235,15 @@ function RouteComponent() {
                         activePlan.images.filter(
                           (image) =>
                             !activePlan.guests
+                              .map((guest) => ({
+                                guest,
+                                usage: activePlan.images
+                                  .filter((img) => img.guestname === guest)
+                                  .reduce((acc, img) => acc + img.imagesize, 0),
+                              }))
+                              .sort((a, b) => b.usage - a.usage)
                               .slice(0, guestsVisible)
+                              .map(({ guest }) => guest)
                               .includes(image.guestname)
                         ).length
                       }
@@ -211,7 +254,18 @@ function RouteComponent() {
                           .filter(
                             (image) =>
                               !activePlan.guests
+                                .map((guest) => ({
+                                  guest,
+                                  usage: activePlan.images
+                                    .filter((img) => img.guestname === guest)
+                                    .reduce(
+                                      (acc, img) => acc + img.imagesize,
+                                      0
+                                    ),
+                                }))
+                                .sort((a, b) => b.usage - a.usage)
                                 .slice(0, guestsVisible)
+                                .map(({ guest }) => guest)
                                 .includes(image.guestname)
                           )
                           .reduce((acc, image) => acc + image.imagesize, 0),
@@ -228,5 +282,42 @@ function RouteComponent() {
 
       <Outlet />
     </>
+  );
+}
+
+function ShareUploadDialog({ url }: { url: string }) {
+  // TODO: Remove hardcoded URL
+  const link = 'http://localhost:5173/upload/' + url;
+
+  // TODO: Add QR code
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button>
+          <Share2Icon /> Share Upload Link
+        </Button>
+      </DialogTrigger>
+
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Share your upload link</DialogTitle>
+          <DialogDescription>
+            Share the QR code or the link below with your guests, allowing them
+            to upload their images
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className='flex '>
+          <Input readOnly value={link} className='rounded-r-none' />
+          <Button
+            onClick={() => navigator.clipboard.writeText(link)}
+            className='rounded-l-none'
+          >
+            Copy Link
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
