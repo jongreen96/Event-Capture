@@ -48,15 +48,17 @@ export function AppSidebar({ user }: { user: User }) {
   const matchRoute = useMatchRoute();
   const navigate = useNavigate();
 
-  const { activePlan, setActivePlan } = useContext(
+  const { activePlanId, setActivePlanId } = useContext(
     PlanContext
   ) as PlanContextType;
 
   useEffect(() => {
-    if (!activePlan && plans.data?.length) {
-      setActivePlan(plans.data[0]);
+    if (!activePlanId && plans.data?.length) {
+      setActivePlanId(plans.data[0].id);
     }
-  }, [activePlan, plans.data, setActivePlan]);
+  }, [activePlanId, plans.data, setActivePlanId]);
+
+  const plan = plans.data?.find((plan) => plan.id === activePlanId);
 
   if (plans.isLoading) {
     return (
@@ -129,7 +131,7 @@ export function AppSidebar({ user }: { user: User }) {
                     Photos
                   </Link>
                 </SidebarMenuButton>
-                <SidebarMenuBadge>{activePlan?.images.length}</SidebarMenuBadge>
+                <SidebarMenuBadge>{plan?.images.length}</SidebarMenuBadge>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
@@ -141,7 +143,7 @@ export function AppSidebar({ user }: { user: User }) {
                     Guests
                   </Link>
                 </SidebarMenuButton>
-                <SidebarMenuBadge>{activePlan?.guests.length}</SidebarMenuBadge>
+                <SidebarMenuBadge>{plan?.guests.length}</SidebarMenuBadge>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
@@ -160,7 +162,7 @@ export function AppSidebar({ user }: { user: User }) {
                   <SidebarMenuButton>
                     <FileBarChart2Icon />
                     <p className='truncate'>
-                      {activePlan?.eventname || 'Select a plan'}
+                      {plan?.eventname || 'Select a plan'}
                     </p>
                     <ChevronUpIcon className='ml-auto' />
                   </SidebarMenuButton>
@@ -176,7 +178,7 @@ export function AppSidebar({ user }: { user: User }) {
                   {plans.data!.map((plan: Plan) => (
                     <DropdownMenuItem
                       key={plan.id}
-                      onClick={() => setActivePlan(plan)}
+                      onClick={() => setActivePlanId(plan.id)}
                     >
                       {plan.eventname}
                     </DropdownMenuItem>

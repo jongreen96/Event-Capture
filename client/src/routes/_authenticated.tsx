@@ -6,11 +6,10 @@ import {
   useNavigate,
 } from '@tanstack/react-router';
 import { createContext, useEffect, useState } from 'react';
-import type { Plan } from '../../../src/utils/types';
 
 export type PlanContextType = {
-  activePlan: Plan | null;
-  setActivePlan: React.Dispatch<React.SetStateAction<Plan | null>>;
+  activePlanId: string | null;
+  setActivePlanId: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 export const PlanContext = createContext<PlanContextType | null>(null);
@@ -35,21 +34,21 @@ function RouteComponent() {
   const { session } = Route.useRouteContext();
   if (!session) navigate({ to: '/sign-in', search: { error: undefined } });
 
-  const [activePlan, setActivePlan] = useState<null | Plan>(() => {
-    const stored = sessionStorage.getItem('activePlan');
-    return stored ? JSON.parse(stored) : null;
+  const [activePlanId, setActivePlanId] = useState<null | string>(() => {
+    const stored = sessionStorage.getItem('activePlanId');
+    return stored ? stored : null;
   });
 
   useEffect(() => {
-    if (activePlan) {
-      sessionStorage.setItem('activePlan', JSON.stringify(activePlan));
+    if (activePlanId) {
+      sessionStorage.setItem('activePlanId', activePlanId);
     } else {
-      sessionStorage.removeItem('activePlan');
+      sessionStorage.removeItem('activePlanId');
     }
-  }, [activePlan]);
+  }, [activePlanId]);
 
   return (
-    <PlanContext.Provider value={{ activePlan, setActivePlan }}>
+    <PlanContext.Provider value={{ activePlanId, setActivePlanId }}>
       <Outlet />
     </PlanContext.Provider>
   );

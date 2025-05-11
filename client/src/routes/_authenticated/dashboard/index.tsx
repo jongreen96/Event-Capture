@@ -30,8 +30,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { getPlans } from '@/lib/queries';
 import { formatImageSize } from '@/lib/utils';
 import { PlanContext, type PlanContextType } from '@/routes/_authenticated';
+import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
 import {
   LockIcon,
@@ -48,8 +50,17 @@ export const Route = createFileRoute('/_authenticated/dashboard/')({
 });
 
 function RouteComponent() {
-  const { activePlan } = useContext(PlanContext) as PlanContextType;
-  if (!activePlan) return <p>Error loading plans.</p>;
+  const { activePlanId } = useContext(PlanContext) as PlanContextType;
+  if (!activePlanId) return <p>Error loading plans.</p>;
+
+  const plans = useQuery({
+    queryKey: ['plans'],
+    queryFn: getPlans,
+    staleTime: Infinity,
+  });
+
+  const plan = plans.data?.find((plan) => plan.id === activePlanId);
+  if (!plan) return <p>Error loading plans.</p>;
 
   const photosVisible = 23;
   const guestsVisible = 10;
@@ -59,26 +70,26 @@ function RouteComponent() {
       <section>
         <div className='flex items-center justify-between p-0 pl-2 gap-2'>
           <p className='capitalize overflow-ellipsis font-semibold text-xl md:text-2xl lg:text-3xl line-clamp-3'>
-            {activePlan?.eventname}
+            {plan?.eventname}
           </p>
 
           <div className='flex md:flex-row flex-col-reverse gap-2 items-center'>
             <div className='flex gap-2 items-center opacity-50 w-full justify-end'>
-              {activePlan.pin ? (
+              {plan.pin ? (
                 <LockIcon className='size-4 text-green-500' />
               ) : (
                 <LockOpenIcon className='size-4 text-red-500' />
               )}
 
-              {activePlan.pauseduploads ? (
+              {plan.pauseduploads ? (
                 <PauseIcon className='size-4 text-green-500' />
               ) : null}
             </div>
 
             <div className='flex gap-2 items-center'>
-              <PlanSettingsDialog activePlan={activePlan} />
+              <PlanSettingsDialog activePlan={plan} />
 
-              <ShareUploadDialog url={activePlan.url} />
+              <ShareUploadDialog url={plan.url} />
             </div>
           </div>
         </div>
@@ -92,7 +103,7 @@ function RouteComponent() {
             </CardHeader>
 
             <CardContent className='text-3xl text-center font-semibold'>
-              {activePlan?.images.length}
+              {plan?.images.length}
             </CardContent>
           </Card>
         </Link>
@@ -104,7 +115,7 @@ function RouteComponent() {
             </CardHeader>
 
             <CardContent className='text-3xl text-center font-semibold'>
-              {activePlan?.guests.length}
+              {plan?.guests.length}
             </CardContent>
           </Card>
         </Link>
@@ -116,10 +127,7 @@ function RouteComponent() {
 
           <CardContent className='text-3xl text-center font-semibold'>
             {formatImageSize(
-              activePlan.images.reduce(
-                (acc, image) => acc + image.imagesize,
-                0
-              ),
+              plan?.images.reduce((acc, image) => acc + image.imagesize, 0),
               2
             )}
           </CardContent>
@@ -131,7 +139,7 @@ function RouteComponent() {
           </CardHeader>
 
           <CardContent className='text-3xl text-center font-semibold capitalize'>
-            {activePlan?.plan}
+            {plan?.plan}
           </CardContent>
         </Card>
       </section>
@@ -151,7 +159,7 @@ function RouteComponent() {
           </CardHeader>
 
           <CardContent className='grid px-0 gap-2 grid-cols-2 @2xs/ic:grid-cols-3 @sm/ic:grid-cols-4 @xl/ic:grid-cols-5 @2xl/ic:grid-cols-6'>
-            {activePlan.images.slice(0, photosVisible).map((image) => (
+            {plan?.images.slice(0, photosVisible).map((image) => (
               <Link
                 to={`/dashboard/photos/$photoId`}
                 params={{ photoId: image.id }}
@@ -167,7 +175,7 @@ function RouteComponent() {
               </Link>
             ))}
 
-            {activePlan.images.length > photosVisible && (
+            {plan?.images.length > photosVisible && (
               <Link
                 to='/dashboard/photos'
                 className={buttonVariants({
@@ -175,7 +183,7 @@ function RouteComponent() {
                   className: 'h-full text-muted-foreground',
                 })}
               >
-                + {activePlan.images.length - photosVisible} more
+                + {plan?.images.length - photosVisible} more
               </Link>
             )}
           </CardContent>
@@ -205,10 +213,10 @@ function RouteComponent() {
               </TableHeader>
 
               <TableBody>
-                {activePlan.guests
+                {plan?.guests
                   .map((guest) => ({
                     guest,
-                    usage: activePlan.images
+                    usage: plan?.images
                       .filter((image) => image.guestname === guest)
                       .reduce((acc, image) => acc + image.imagesize, 0),
                   }))
@@ -221,14 +229,14 @@ function RouteComponent() {
                       </TableCell>
                       <TableCell className='text-right'>
                         {
-                          activePlan.images.filter(
+                          plan?.images.filter(
                             (image) => image.guestname === guest
                           ).length
                         }
                       </TableCell>
                       <TableCell className='text-right'>
                         {formatImageSize(
-                          activePlan.images
+                          plan?.images
                             .filter((image) => image.guestname === guest)
                             .reduce((acc, image) => acc + image.imagesize, 0),
                           1
@@ -237,19 +245,19 @@ function RouteComponent() {
                     </TableRow>
                   ))}
 
-                {activePlan.guests.length > guestsVisible && (
+                {plan?.guests.length > guestsVisible && (
                   <TableRow>
                     <TableCell className='text-muted-foreground'>
-                      + {activePlan.guests.length - guestsVisible} more
+                      + {plan?.guests.length - guestsVisible} more
                     </TableCell>
                     <TableCell className='text-right text-muted-foreground'>
                       {
-                        activePlan.images.filter(
+                        plan?.images.filter(
                           (image) =>
-                            !activePlan.guests
+                            !plan?.guests
                               .map((guest) => ({
                                 guest,
-                                usage: activePlan.images
+                                usage: plan?.images
                                   .filter((img) => img.guestname === guest)
                                   .reduce((acc, img) => acc + img.imagesize, 0),
                               }))
@@ -262,13 +270,13 @@ function RouteComponent() {
                     </TableCell>
                     <TableCell className='text-right text-muted-foreground'>
                       {formatImageSize(
-                        activePlan.images
+                        plan?.images
                           .filter(
                             (image) =>
-                              !activePlan.guests
+                              !plan?.guests
                                 .map((guest) => ({
                                   guest,
-                                  usage: activePlan.images
+                                  usage: plan?.images
                                     .filter((img) => img.guestname === guest)
                                     .reduce(
                                       (acc, img) => acc + img.imagesize,

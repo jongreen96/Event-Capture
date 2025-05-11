@@ -6,10 +6,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { PlanContext, type PlanContextType } from '@/routes/_authenticated';
+import { getPlans } from '@/lib/queries';
+import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Navigate, useNavigate } from '@tanstack/react-router';
 import { XIcon } from 'lucide-react';
-import { useContext } from 'react';
 
 export const Route = createFileRoute(
   '/_authenticated/dashboard/photos/$photoId'
@@ -21,10 +21,15 @@ function RouteComponent() {
   const navigate = useNavigate();
   const { photoId } = Route.useParams();
 
-  const { activePlan } = useContext(PlanContext) as PlanContextType;
-  if (!activePlan) return <p>Error loading plans.</p>;
+  const plans = useQuery({
+    queryKey: ['plans'],
+    queryFn: getPlans,
+    staleTime: Infinity,
+  });
 
-  const image = activePlan.images.find((img) => img.id === photoId);
+  const image = plans.data
+    ?.find((plan) => plan.images.some((img) => img.id === photoId))
+    ?.images.find((img) => img.id === photoId);
   if (!image) return <Navigate to='/dashboard/photos' />;
 
   return (

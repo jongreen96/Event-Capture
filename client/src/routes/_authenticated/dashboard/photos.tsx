@@ -1,6 +1,8 @@
 import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getPlans } from '@/lib/queries';
 import { PlanContext, type PlanContextType } from '@/routes/_authenticated';
+import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
 import { ChevronLeft } from 'lucide-react';
 import { useContext } from 'react';
@@ -10,8 +12,16 @@ export const Route = createFileRoute('/_authenticated/dashboard/photos')({
 });
 
 function RouteComponent() {
-  const { activePlan } = useContext(PlanContext) as PlanContextType;
-  if (!activePlan) return <p>Error loading plans.</p>;
+  const { activePlanId } = useContext(PlanContext) as PlanContextType;
+
+  const plans = useQuery({
+    queryKey: ['plans'],
+    queryFn: getPlans,
+    staleTime: Infinity,
+  });
+
+  const plan = plans.data?.find((plan) => plan.id === activePlanId);
+  if (!plan) return <p>Error loading plan.</p>;
 
   return (
     <Card className='shadow-none border-0 @container/ic'>
@@ -30,7 +40,7 @@ function RouteComponent() {
       </CardHeader>
 
       <CardContent className='grid gap-2 grid-cols-2 @xs/ic:grid-cols-3 @md/ic:grid-cols-4 @xl/ic:grid-cols-5 @2xl/ic:grid-cols-6 @4xl/ic:grid-cols-8 @6xl/ic:grid-cols-10'>
-        {activePlan.images.map((image) => (
+        {plan?.images.map((image) => (
           <Link
             to={`/dashboard/photos/$photoId`}
             params={{ photoId: image.id }}
