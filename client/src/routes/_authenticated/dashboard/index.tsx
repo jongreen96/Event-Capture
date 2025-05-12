@@ -20,6 +20,11 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from '@/components/ui/input-otp';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -31,9 +36,13 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { getPlans } from '@/lib/queries';
-import { formatImageSize } from '@/lib/utils';
+import {
+  formatImageSize,
+  getOtherGuestsStats,
+  getTopGuests,
+} from '@/lib/utils';
 import { PlanContext, type PlanContextType } from '@/routes/_authenticated';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
 import {
   LockIcon,
@@ -42,12 +51,28 @@ import {
   SettingsIcon,
   Share2Icon,
 } from 'lucide-react';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import type { Plan } from '../../../../../src/utils/types';
 
 export const Route = createFileRoute('/_authenticated/dashboard/')({
   component: RouteComponent,
 });
+
+function usePlanMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (newData: Record<string, any>) => {
+      return fetch('/api/plan', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newData),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['plans'] });
+    },
+  });
+}
 
 function RouteComponent() {
   const { activePlanId } = useContext(PlanContext) as PlanContextType;
@@ -60,7 +85,7 @@ function RouteComponent() {
   });
 
   const plan = plans.data?.find((plan) => plan.id === activePlanId);
-  if (!plan) return <p>Error loading plans.</p>;
+  if (!plan) return <p>Select a plan from the sidebar.</p>;
 
   const photosVisible = 23;
   const guestsVisible = 10;
@@ -87,7 +112,7 @@ function RouteComponent() {
             </div>
 
             <div className='flex gap-2 items-center'>
-              <PlanSettingsDialog activePlan={plan} />
+              <PlanSettingsDialog plan={plan} />
 
               <ShareUploadDialog url={plan.url} />
             </div>
@@ -213,82 +238,42 @@ function RouteComponent() {
               </TableHeader>
 
               <TableBody>
-                {plan?.guests
-                  .map((guest) => ({
-                    guest,
-                    usage: plan?.images
-                      .filter((image) => image.guestname === guest)
-                      .reduce((acc, image) => acc + image.imagesize, 0),
-                  }))
-                  .sort((a, b) => b.usage - a.usage)
-                  .slice(0, guestsVisible)
-                  .map(({ guest }) => (
+                {getTopGuests(plan, guestsVisible).map(
+                  ({ guest }: { guest: string }) => (
                     <TableRow key={guest}>
                       <TableCell className='max-w-1 truncate'>
                         {guest}
                       </TableCell>
                       <TableCell className='text-right'>
                         {
-                          plan?.images.filter(
+                          plan.images.filter(
                             (image) => image.guestname === guest
                           ).length
                         }
                       </TableCell>
                       <TableCell className='text-right'>
                         {formatImageSize(
-                          plan?.images
+                          plan.images
                             .filter((image) => image.guestname === guest)
                             .reduce((acc, image) => acc + image.imagesize, 0),
                           1
                         )}
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )
+                )}
 
-                {plan?.guests.length > guestsVisible && (
+                {plan.guests.length > guestsVisible && (
                   <TableRow>
                     <TableCell className='text-muted-foreground'>
-                      + {plan?.guests.length - guestsVisible} more
+                      + {getOtherGuestsStats(plan, guestsVisible).count} more
                     </TableCell>
                     <TableCell className='text-right text-muted-foreground'>
-                      {
-                        plan?.images.filter(
-                          (image) =>
-                            !plan?.guests
-                              .map((guest) => ({
-                                guest,
-                                usage: plan?.images
-                                  .filter((img) => img.guestname === guest)
-                                  .reduce((acc, img) => acc + img.imagesize, 0),
-                              }))
-                              .sort((a, b) => b.usage - a.usage)
-                              .slice(0, guestsVisible)
-                              .map(({ guest }) => guest)
-                              .includes(image.guestname)
-                        ).length
-                      }
+                      {getOtherGuestsStats(plan, guestsVisible).photoCount}
                     </TableCell>
                     <TableCell className='text-right text-muted-foreground'>
                       {formatImageSize(
-                        plan?.images
-                          .filter(
-                            (image) =>
-                              !plan?.guests
-                                .map((guest) => ({
-                                  guest,
-                                  usage: plan?.images
-                                    .filter((img) => img.guestname === guest)
-                                    .reduce(
-                                      (acc, img) => acc + img.imagesize,
-                                      0
-                                    ),
-                                }))
-                                .sort((a, b) => b.usage - a.usage)
-                                .slice(0, guestsVisible)
-                                .map(({ guest }) => guest)
-                                .includes(image.guestname)
-                          )
-                          .reduce((acc, image) => acc + image.imagesize, 0),
+                        getOtherGuestsStats(plan, guestsVisible).usage,
                         1
                       )}
                     </TableCell>
@@ -305,7 +290,9 @@ function RouteComponent() {
   );
 }
 
-function PlanSettingsDialog({ activePlan }: { activePlan: Plan }) {
+function PlanSettingsDialog({ plan }: { plan: Plan }) {
+  const mutation = usePlanMutation();
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -331,9 +318,13 @@ function PlanSettingsDialog({ activePlan }: { activePlan: Plan }) {
             </p>
           </div>
           <Switch
-            checked={activePlan.pauseduploads}
+            checked={plan.pauseduploads}
+            disabled={mutation.isPending}
             onCheckedChange={() => {
-              activePlan.pauseduploads = !activePlan.pauseduploads;
+              mutation.mutate({
+                planId: plan.id,
+                pauseduploads: !plan.pauseduploads,
+              });
             }}
             className='self-center justify-self-center'
           />
@@ -345,9 +336,23 @@ function PlanSettingsDialog({ activePlan }: { activePlan: Plan }) {
               guests.
             </p>
           </div>
-          <Button variant='outline' className='self-center'>
-            Change Name
-          </Button>
+          <ChangeNameDialog plan={plan} />
+
+          <div>
+            <h2 className=' font-semibold'>
+              {plan.pin ? 'Change' : 'Set'} pin
+              {plan.pin && (
+                <span className='text-xs text-muted-foreground ml-2'>
+                  Current pin: {plan.pin}
+                </span>
+              )}
+            </h2>
+            <p className='text-xs text-muted-foreground'>
+              Set a pin for your event. This will be required to upload images
+              to your event.
+            </p>
+          </div>
+          <ChangePinDialog plan={plan} />
 
           <div>
             <h2 className=' font-semibold'>Roll upload URL</h2>
@@ -361,6 +366,7 @@ function PlanSettingsDialog({ activePlan }: { activePlan: Plan }) {
               <Button
                 variant='outline'
                 className='bg-destructive/25 hover:bg-destructive/50 self-center'
+                disabled={mutation.isPending}
               >
                 Roll URL
               </Button>
@@ -378,7 +384,15 @@ function PlanSettingsDialog({ activePlan }: { activePlan: Plan }) {
                 <AlertDialogCancel className='self-center' onClick={() => {}}>
                   Cancel
                 </AlertDialogCancel>
-                <AlertDialogAction className=' self-center'>
+                <AlertDialogAction
+                  className=' self-center'
+                  onClick={() => {
+                    mutation.mutate({
+                      planId: plan.id,
+                      url: true,
+                    });
+                  }}
+                >
                   Yes, roll URL
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -391,10 +405,7 @@ function PlanSettingsDialog({ activePlan }: { activePlan: Plan }) {
 }
 
 function ShareUploadDialog({ url }: { url: string }) {
-  // TODO: Remove hardcoded URL
   const link = 'http://localhost:5173/upload/' + url;
-
-  // TODO: Add QR code
 
   return (
     <Dialog>
@@ -420,6 +431,148 @@ function ShareUploadDialog({ url }: { url: string }) {
             className='rounded-l-none'
           >
             Copy Link
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ChangeNameDialog({ plan }: { plan: Plan }) {
+  const mutation = usePlanMutation();
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState(plan.eventname);
+
+  useEffect(() => {
+    setName(plan.eventname);
+  }, [plan.eventname]);
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant='outline' className='self-center'>
+          Change Name
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Change Event Name</DialogTitle>
+          <DialogDescription>
+            Enter a new name for your event.
+          </DialogDescription>
+        </DialogHeader>
+        <Input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          disabled={mutation.isPending}
+          autoFocus
+        />
+        <div className='flex gap-2 justify-end'>
+          <Button
+            variant='outline'
+            onClick={() => setOpen(false)}
+            disabled={mutation.isPending}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() =>
+              mutation.mutate({
+                planId: plan.id,
+                eventname: name,
+                onSuccess: () => setOpen(false),
+              })
+            }
+            disabled={mutation.isPending || !name.trim()}
+          >
+            Save
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ChangePinDialog({ plan }: { plan: Plan }) {
+  const mutation = usePlanMutation();
+  const [open, setOpen] = useState(false);
+  const [pin, setPin] = useState(plan.pin ?? '');
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    setPin(plan.pin ?? '');
+    setError('');
+  }, [plan.pin, open]);
+
+  const handleSave = () => {
+    if (String(pin) && !/^\d{4}$/.test(String(pin))) {
+      setError('Pin must be 4 digits or empty to remove.');
+      return;
+    }
+    mutation.mutate({
+      planId: plan.id,
+      pin: pin === '' ? null : String(pin),
+      onSuccess: () => setOpen(false),
+    });
+
+    setOpen(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant='outline' className='self-center'>
+          {plan.pin ? 'Change Pin' : 'Set Pin'}
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{plan.pin ? 'Change Pin' : 'Set Pin'}</DialogTitle>
+          <DialogDescription>
+            {plan.pin
+              ? 'Enter a new pin for your event, or leave blank to remove the pin.'
+              : 'Set a pin for your event. Leave blank for no pin.'}
+          </DialogDescription>
+        </DialogHeader>
+        <InputOTP
+          type='text'
+          maxLength={4}
+          value={String(pin)}
+          onChange={setPin}
+          disabled={mutation.isPending}
+          autoFocus
+        >
+          <InputOTPGroup>
+            <InputOTPSlot index={0} />
+            <InputOTPSlot index={1} />
+            <InputOTPSlot index={2} />
+            <InputOTPSlot index={3} />
+          </InputOTPGroup>
+        </InputOTP>
+        {error && <div className='text-destructive text-xs'>{error}</div>}
+        <div className='flex gap-2 justify-end'>
+          {plan.pin && (
+            <Button
+              variant='ghost'
+              onClick={() => {
+                setPin('');
+              }}
+              disabled={mutation.isPending}
+              className='text-destructive/75 hover:bg-destructive/10 hover:text-destructive'
+            >
+              Remove Pin
+            </Button>
+          )}
+
+          <Button
+            variant='outline'
+            onClick={() => setOpen(false)}
+            disabled={mutation.isPending}
+          >
+            Cancel
+          </Button>
+          <Button onClick={handleSave} disabled={mutation.isPending}>
+            Save
           </Button>
         </div>
       </DialogContent>

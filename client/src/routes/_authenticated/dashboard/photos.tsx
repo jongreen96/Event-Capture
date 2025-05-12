@@ -21,7 +21,7 @@ function RouteComponent() {
   });
 
   const plan = plans.data?.find((plan) => plan.id === activePlanId);
-  if (!plan) return <p>Error loading plan.</p>;
+  if (!plan) return <p>Select a plan from the sidebar.</p>;
 
   return (
     <Card className='shadow-none border-0 @container/ic'>

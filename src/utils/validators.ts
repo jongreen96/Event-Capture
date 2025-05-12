@@ -55,7 +55,7 @@ export const updatePlanValidation = (val: any, c: any) => {
 
   switch (key) {
     case 'pin':
-      if (!/^\d{4}$/.test(String(value))) {
+      if (!/^\d{4}$/.test(String(value)) && value !== null) {
         return c.json(
           { error: 'Pin must be exactly 4 digits and contain digits only' },
           400
