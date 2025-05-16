@@ -236,7 +236,7 @@ function ChangePinDialog({ plan }: { plan: Plan }) {
           disabled={mutation.isPending}
           autoFocus
         >
-          <InputOTPGroup>
+          <InputOTPGroup className='m-auto my-6'>
             <InputOTPSlot index={0} />
             <InputOTPSlot index={1} />
             <InputOTPSlot index={2} />
