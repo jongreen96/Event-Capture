@@ -11,6 +11,11 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from '@/components/ui/input-otp';
+import {
   Table,
   TableBody,
   TableCell,
@@ -28,7 +33,9 @@ import { PlanContext, type PlanContextType } from '@/routes/_authenticated';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { LockIcon, LockOpenIcon, PauseIcon, Share2Icon } from 'lucide-react';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import QR from 'react-qr-code';
+import type { Plan } from '../../../../../src/utils/types';
 
 export const Route = createFileRoute('/_authenticated/dashboard/')({
   component: RouteComponent,
@@ -74,7 +81,7 @@ function RouteComponent() {
             <div className='flex gap-2 items-center'>
               <PlanSettingsDialog plan={plan} />
 
-              <ShareUploadDialog url={plan.url} />
+              <ShareUploadDialog plan={plan} />
             </div>
           </div>
         </div>
@@ -248,8 +255,18 @@ function RouteComponent() {
   );
 }
 
-function ShareUploadDialog({ url }: { url: string }) {
-  const link = 'http://localhost:5173/upload/' + url;
+function ShareUploadDialog({ plan }: { plan: Plan }) {
+  const link = 'http://localhost:5173/upload/' + plan.url;
+
+  const [showPin, setShowPin] = useState(false);
+
+  // Hide PIN after 5s
+  useEffect(() => {
+    if (showPin) {
+      const timer = setTimeout(() => setShowPin(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showPin]);
 
   return (
     <Dialog>
@@ -268,7 +285,41 @@ function ShareUploadDialog({ url }: { url: string }) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className='flex '>
+        <QR
+          value={link}
+          className='m-auto my-6 rounded border-8 border-white'
+        />
+
+        {plan.pin ? (
+          showPin ? (
+            <InputOTP value={String(plan.pin)} maxLength={4}>
+              <InputOTPGroup className='m-auto'>
+                <InputOTPSlot index={0} />
+                <InputOTPSlot index={1} />
+                <InputOTPSlot index={2} />
+                <InputOTPSlot index={3} />
+              </InputOTPGroup>
+            </InputOTP>
+          ) : (
+            <Button
+              variant='outline'
+              className='w-fit m-auto'
+              onClick={() => {
+                setShowPin(true);
+              }}
+            >
+              Show PIN
+            </Button>
+          )
+        ) : (
+          <p className='text-muted-foreground text-sm text-center'>
+            This link is public and does not require a PIN to upload images.{' '}
+            <br /> We recommend setting a PIN for added security. Without a PIN,
+            anyone with the link can upload images.
+          </p>
+        )}
+
+        <div className='flex'>
           <Input readOnly value={link} className='rounded-r-none' />
           <Button
             onClick={() => navigator.clipboard.writeText(link)}
