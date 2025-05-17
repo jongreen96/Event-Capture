@@ -1,5 +1,6 @@
 import { randomUUIDv7 } from 'bun';
 import { Pool } from 'pg';
+import { planSizes } from '../../client/src/routes/_authenticated/plans';
 
 const db = new Pool({ connectionString: process.env.DATABASE_URL });
 
@@ -116,4 +117,83 @@ export async function updatePlan({
   if (res.rowCount === 0) throw new Error('No plan found');
 
   return res.rows[0];
+}
+
+export async function getUploadData(url: string) {
+  const res = await db.query(
+    `
+    SELECT id, eventname, pauseduploads, pin
+    FROM plan
+    WHERE url = $1 AND status = 'active'
+    `,
+    [url]
+  );
+
+  if (res.rowCount === 0) return null;
+
+  return {
+    planId: res.rows[0].id,
+    eventname: res.rows[0].eventname,
+    pauseduploads: res.rows[0].pauseduploads,
+    hasPin: !!res.rows[0].pin,
+  };
+}
+
+export async function checkStorageCapacity(uploadSize: number, planId: string) {
+  const plan = await db.query(
+    `
+    SELECT plan
+    FROM plan
+    WHERE id = $1
+    `,
+    [planId]
+  );
+
+  if (plan.rowCount === 0) return false;
+
+  const allImages = await db.query(
+    `
+    SELECT imagesize
+    FROM images
+    WHERE planid = $1
+    `,
+    [planId]
+  );
+
+  const totalSizeBytes =
+    allImages.rows.reduce((acc, curr) => acc + curr.imagesize, 0) * 1024;
+  const planKey = plan.rows[0].plan as keyof typeof planSizes;
+  const planStorageBytes = planSizes[planKey].storage * 1024 * 1024;
+
+  return totalSizeBytes + uploadSize <= planStorageBytes;
+}
+
+export async function isPaused(planId: string) {
+  const res = await db.query(
+    `
+    SELECT pauseduploads
+    FROM plan
+    WHERE id = $1
+    `,
+    [planId]
+  );
+
+  if (res.rowCount === 0) return null;
+
+  return res.rows[0].pauseduploads;
+}
+
+export async function isAuthorized(pin: string, planId: string) {
+  const res = await db.query(
+    `
+    SELECT pin
+    FROM plan
+    WHERE id = $1
+    `,
+    [planId]
+  );
+
+  if (res.rowCount === 0) return false;
+
+  return res.rows[0].pin === pin;
 }

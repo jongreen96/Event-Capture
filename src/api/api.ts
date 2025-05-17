@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { auth } from '../utils/auth';
 import { planRoute } from './plan';
+import { uploadRoute } from './upload';
 
 const apiRoute = new Hono<{
   Variables: { user: any };
@@ -17,6 +18,8 @@ apiRoute.use('*', async (c, next) => {
 });
 
 apiRoute.get('/test', (c) => c.json(c.get('user')));
+
+apiRoute.route('/upload', uploadRoute);
 
 apiRoute.route('/plan', planRoute);
 

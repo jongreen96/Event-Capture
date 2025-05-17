@@ -15,6 +15,7 @@ import { Route as WelcomeImport } from './routes/welcome'
 import { Route as SignInImport } from './routes/sign-in'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
+import { Route as UploadUrlImport } from './routes/upload.$url'
 import { Route as AuthenticatedPlansImport } from './routes/_authenticated/plans'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard/route'
 import { Route as AuthenticatedDashboardIndexImport } from './routes/_authenticated/dashboard/index'
@@ -44,6 +45,12 @@ const AuthenticatedRoute = AuthenticatedImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const UploadUrlRoute = UploadUrlImport.update({
+  id: '/upload/$url',
+  path: '/upload/$url',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -134,6 +141,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlansImport
       parentRoute: typeof AuthenticatedImport
     }
+    '/upload/$url': {
+      id: '/upload/$url'
+      path: '/upload/$url'
+      fullPath: '/upload/$url'
+      preLoaderRoute: typeof UploadUrlImport
+      parentRoute: typeof rootRoute
+    }
     '/_authenticated/dashboard/guests': {
       id: '/_authenticated/dashboard/guests'
       path: '/guests'
@@ -223,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/welcome': typeof WelcomeRoute
   '/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/plans': typeof AuthenticatedPlansRoute
+  '/upload/$url': typeof UploadUrlRoute
   '/dashboard/guests': typeof AuthenticatedDashboardGuestsRoute
   '/dashboard/photos': typeof AuthenticatedDashboardPhotosRouteWithChildren
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
@@ -235,6 +250,7 @@ export interface FileRoutesByTo {
   '/sign-in': typeof SignInRoute
   '/welcome': typeof WelcomeRoute
   '/plans': typeof AuthenticatedPlansRoute
+  '/upload/$url': typeof UploadUrlRoute
   '/dashboard/guests': typeof AuthenticatedDashboardGuestsRoute
   '/dashboard/photos': typeof AuthenticatedDashboardPhotosRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
@@ -249,6 +265,7 @@ export interface FileRoutesById {
   '/welcome': typeof WelcomeRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/_authenticated/plans': typeof AuthenticatedPlansRoute
+  '/upload/$url': typeof UploadUrlRoute
   '/_authenticated/dashboard/guests': typeof AuthenticatedDashboardGuestsRoute
   '/_authenticated/dashboard/photos': typeof AuthenticatedDashboardPhotosRouteWithChildren
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
@@ -264,6 +281,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/dashboard'
     | '/plans'
+    | '/upload/$url'
     | '/dashboard/guests'
     | '/dashboard/photos'
     | '/dashboard/'
@@ -275,6 +293,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/welcome'
     | '/plans'
+    | '/upload/$url'
     | '/dashboard/guests'
     | '/dashboard/photos'
     | '/dashboard'
@@ -287,6 +306,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/_authenticated/dashboard'
     | '/_authenticated/plans'
+    | '/upload/$url'
     | '/_authenticated/dashboard/guests'
     | '/_authenticated/dashboard/photos'
     | '/_authenticated/dashboard/'
@@ -299,6 +319,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   SignInRoute: typeof SignInRoute
   WelcomeRoute: typeof WelcomeRoute
+  UploadUrlRoute: typeof UploadUrlRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -306,6 +327,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   SignInRoute: SignInRoute,
   WelcomeRoute: WelcomeRoute,
+  UploadUrlRoute: UploadUrlRoute,
 }
 
 export const routeTree = rootRoute
@@ -321,7 +343,8 @@ export const routeTree = rootRoute
         "/",
         "/_authenticated",
         "/sign-in",
-        "/welcome"
+        "/welcome",
+        "/upload/$url"
       ]
     },
     "/": {
@@ -352,6 +375,9 @@ export const routeTree = rootRoute
     "/_authenticated/plans": {
       "filePath": "_authenticated/plans.tsx",
       "parent": "/_authenticated"
+    },
+    "/upload/$url": {
+      "filePath": "upload.$url.tsx"
     },
     "/_authenticated/dashboard/guests": {
       "filePath": "_authenticated/dashboard/guests.tsx",

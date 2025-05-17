@@ -14,6 +14,13 @@ export const Route = createFileRoute('/_authenticated/plans')({
   component: RouteComponent,
 });
 
+export const planSizes = {
+  trial: { storage: 100 },
+  small: { storage: 5000 },
+  medium: { storage: 50000 },
+  large: { storage: 250000 },
+};
+
 function RouteComponent() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();

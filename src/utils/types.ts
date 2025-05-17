@@ -30,3 +30,10 @@ export type Plan = {
   nextbillingdate: string;
   createdat: string;
 };
+
+export type uploadPlan = {
+  planId: string;
+  eventname: string;
+  pauseduploads: boolean;
+  hasPin: boolean;
+};
