@@ -172,7 +172,7 @@ function RouteComponent() {
                 to='/dashboard/photos'
                 className={buttonVariants({
                   variant: 'outline',
-                  className: 'h-full text-muted-foreground',
+                  className: 'h-full text-muted-foreground rounded-xl',
                 })}
               >
                 + {plan?.images.length - photosVisible} more
