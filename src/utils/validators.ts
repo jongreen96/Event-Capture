@@ -89,3 +89,14 @@ export const updatePlanValidation = (val: any, c: any) => {
 
   return { planId: val.planId, key, value };
 };
+
+export const planIdValidation = (val: any, c: any) => {
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+  if (typeof val.planId !== 'string' || !uuidRegex.test(val.planId)) {
+    return c.json({ error: 'planId must be a valid UUID string' }, 400);
+  }
+
+  return { planId: val.planId };
+};

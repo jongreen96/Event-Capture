@@ -1,8 +1,15 @@
-import { randomUUIDv7 } from 'bun';
+import { randomUUIDv7, S3Client } from 'bun';
 import { Pool } from 'pg';
 import { planSizes } from '../../client/src/routes/_authenticated/plans';
 
 const db = new Pool({ connectionString: process.env.DATABASE_URL });
+
+export const R2 = new S3Client({
+  accessKeyId: process.env.CLOUDFLARE_ACCESS_KEY_ID!,
+  secretAccessKey: process.env.CLOUDFLARE_SECRET_KEY!,
+  bucket: process.env.CLOUDFLARE_BUCKET_NAME!,
+  endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID!}.r2.cloudflarestorage.com`,
+});
 
 export async function getPlans(userId: string) {
   const plans = await db.query(
@@ -139,61 +146,51 @@ export async function getUploadData(url: string) {
   };
 }
 
-export async function checkStorageCapacity(uploadSize: number, planId: string) {
-  const plan = await db.query(
+export async function checkUploadPermissions({
+  uploadSize,
+  planId,
+  pin,
+}: {
+  uploadSize: number;
+  planId: string;
+  pin?: string;
+}) {
+  // Query plan and all images in one go
+  const planAndImages = await db.query(
     `
-    SELECT plan
-    FROM plan
-    WHERE id = $1
+    SELECT
+      p.plan,
+      p.pauseduploads,
+      p.pin,
+      COALESCE(SUM(i.imagesize), 0) AS total_imagesize
+    FROM plan p
+    LEFT JOIN images i ON i.planid = p.id
+    WHERE p.id = $1
+    GROUP BY p.plan, p.pauseduploads, p.pin
     `,
     [planId]
   );
 
-  if (plan.rowCount === 0) return false;
+  if (planAndImages.rowCount === 0) {
+    return { exists: false };
+  }
 
-  const allImages = await db.query(
-    `
-    SELECT imagesize
-    FROM images
-    WHERE planid = $1
-    `,
-    [planId]
-  );
-
-  const totalSizeBytes =
-    allImages.rows.reduce((acc, curr) => acc + curr.imagesize, 0) * 1024;
-  const planKey = plan.rows[0].plan as keyof typeof planSizes;
+  const row = planAndImages.rows[0];
+  const planKey = row.plan as keyof typeof planSizes;
   const planStorageBytes = planSizes[planKey].storage * 1024 * 1024;
+  // imagesize is stored in KB, so convert to bytes
+  const totalSizeBytes = Number(row.total_imagesize) * 1024;
 
-  return totalSizeBytes + uploadSize <= planStorageBytes;
-}
+  const paused = row.pauseduploads;
+  const hasPin = !!row.pin;
+  const authorized = !hasPin || (pin && row.pin === pin);
+  const hasSpace = totalSizeBytes + uploadSize <= planStorageBytes;
 
-export async function isPaused(planId: string) {
-  const res = await db.query(
-    `
-    SELECT pauseduploads
-    FROM plan
-    WHERE id = $1
-    `,
-    [planId]
-  );
-
-  if (res.rowCount === 0) return null;
-
-  return res.rows[0].pauseduploads;
-}
-
-export async function isAuthorized(pin: string, planId: string) {
-  const res = await db.query(
-    `
-    SELECT pin
-    FROM plan
-    WHERE id = $1
-    `,
-    [planId]
-  );
-
-  if (res.rowCount === 0) return false;
-
-  return res.rows[0].pin === pin;
+  return {
+    exists: true,
+    paused,
+    hasPin,
+    authorized,
+    hasSpace,
+  };
 }

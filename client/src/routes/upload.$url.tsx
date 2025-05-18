@@ -59,29 +59,10 @@ function RouteComponent() {
     setErrorMessage(null);
     setIsUploading(true);
 
-    const hasStorageCapacity = await fetch(
-      `/api/upload/${planId}/check-storage`,
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          planId,
-          uploadSize: Array.from(files).reduce(
-            (acc, file) => acc + file.size,
-            0
-          ),
-        }),
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
-    if (!hasStorageCapacity.ok) {
-      setErrorMessage('Storage limit exceeded.');
-      setIsUploading(false);
-      return;
-    }
-
     const fileMetadata = Array.from(files).map((file) => ({
       name: planId + '/' + nanoid(5) + '-' + file.name,
       type: file.type,
+      size: file.size,
     }));
 
     const res = await fetch(`/api/upload/${planId}/presign`, {
@@ -101,6 +82,10 @@ function RouteComponent() {
       setErrorMessage('Uploads are paused');
       setIsUploading(false);
       return;
+    } else if (res.status === 409) {
+      setErrorMessage('Storage limit exceeded');
+      setIsUploading(false);
+      return;
     }
 
     const presignedUrls = await res.json();
@@ -110,35 +95,22 @@ function RouteComponent() {
       Array.from(files).map(async (file, index) => {
         const { url, key } = presignedUrls[index];
 
-        // TODO: This is where i got to, presigned urls are
-        // generated but uploading shows r2 creds possibly
-        // incorrect. Good luck, God speed!
-
         // Upload the file to R2
         await fetch(url, {
           method: 'PUT',
           body: file,
         });
 
-        // Create preview image on server
-        // await fetch('/api/create-preview', {
-        //   method: 'POST',
-        //   body: JSON.stringify({
-        //     key,
-        //   }),
-        // });
-
-        // Add image to database
-        // await fetch('/api/add-image', {
-        //   method: 'POST',
-        //   body: JSON.stringify({
-        //     planId,
-        //     guest,
-        //     size: file.size,
-        //     url: key,
-        //     key: fileMetadata[index].name,
-        //   }),
-        // });
+        await fetch(`/api/upload/${planId}/add-image`, {
+          method: 'POST',
+          body: JSON.stringify({
+            planId,
+            guest,
+            size: file.size,
+            url: key,
+            key: fileMetadata[index].name,
+          }),
+        });
 
         completedUploads += 1;
         setUploadProgress((completedUploads / files.length) * 100);
@@ -166,7 +138,11 @@ function RouteComponent() {
             onSubmit={(e) => handleSubmit(e)}
             className='flex flex-col items-center gap-4'
           >
-            <ImageInput files={files} setFiles={setFiles} />
+            <ImageInput
+              files={files}
+              setFiles={setFiles}
+              disabled={completed || pauseduploads}
+            />
 
             <ImageList files={files} />
 
@@ -179,6 +155,7 @@ function RouteComponent() {
                   value={pin}
                   onChange={setPin}
                   id='pin'
+                  disabled={completed || pauseduploads}
                 >
                   <InputOTPGroup>
                     <InputOTPSlot index={0} />
@@ -200,6 +177,7 @@ function RouteComponent() {
                 className='w-40 text-ellipsis'
                 value={guest}
                 onChange={(e) => setGuest(e.target.value)}
+                disabled={completed || pauseduploads}
               />
             </div>
 
@@ -212,7 +190,9 @@ function RouteComponent() {
               type='submit'
               disabled={isUploading || completed || pauseduploads}
             >
-              {completed ? (
+              {pauseduploads ? (
+                'Uploads paused by admin'
+              ) : completed ? (
                 'Completed'
               ) : isUploading ? (
                 <p className='flex items-center gap-2'>
@@ -237,9 +217,11 @@ function RouteComponent() {
 function ImageInput({
   files,
   setFiles,
+  disabled,
 }: {
   files: FileList | null;
   setFiles: React.Dispatch<React.SetStateAction<FileList | null>>;
+  disabled: boolean;
 }) {
   const MAX_FILES = 250;
 
@@ -308,6 +290,7 @@ function ImageInput({
         variant='outline'
         onClick={handleFileClick}
         className='flex h-32 w-full flex-col gap-2 border-dashed'
+        disabled={disabled}
       >
         <UploadIcon className='h-8 w-8' />
         {files?.length ? (

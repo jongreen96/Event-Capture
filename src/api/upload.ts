@@ -1,12 +1,7 @@
-import { S3Client } from 'bun';
 import { Hono } from 'hono';
 import { validator } from 'hono/validator';
-import {
-  checkStorageCapacity,
-  getUploadData,
-  isAuthorized,
-  isPaused,
-} from '../utils/db';
+import { checkUploadPermissions, getUploadData, R2 } from '../utils/db';
+import { planIdValidation } from '../utils/validators';
 
 export const uploadRoute = new Hono<{
   Variables: { user: any };
@@ -39,63 +34,18 @@ uploadRoute.get(
 );
 
 uploadRoute.post(
-  '/:planId/check-storage',
-  validator('param', (val) => {
-    if (typeof val.planId !== 'string')
-      return { error: 'Plan ID must be a non-empty string' };
-
-    return { planId: val.planId };
-  }),
-  validator('json', (val) => {
-    if (typeof val.uploadSize !== 'number' || val.uploadSize <= 0)
-      return { error: 'Upload size must be a positive number' };
-
-    return { uploadSize: val.uploadSize };
-  }),
-  async (c) => {
-    try {
-      const hasSpace = await checkStorageCapacity(
-        c.req.valid('json').uploadSize,
-        String(c.req.valid('param').planId)
-      );
-      if (!hasSpace)
-        return c.json(
-          { error: 'Storage limit exceeded, please contact the host' },
-          403
-        );
-
-      return c.json({ success: true });
-    } catch (e) {
-      console.error(e);
-      return c.json(
-        { error: 'An error occurred while checking storage.' },
-        500
-      );
-    }
-  }
-);
-
-const r2 = new S3Client({
-  accessKeyId: process.env.CLOUDFLARE_ACCESS_KEY_ID!,
-  secretAccessKey: process.env.CLOUDFLARE_SECRET_KEY!,
-  bucket: process.env.CLOUDFLARE_BUCKET_NAME!,
-  endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID!}.r2.cloudflarestorage.com`,
-});
-
-uploadRoute.post(
   ':planId/presign',
-  validator('param', (val) => {
-    if (typeof val.planId !== 'string')
-      return { error: 'Plan ID must be a non-empty string' };
-
-    return { planId: val.planId };
-  }),
+  validator('param', planIdValidation),
   validator('json', (val) => {
     if (!Array.isArray(val.fileMetadata))
       return { error: 'File metadata must be an array' };
 
     for (const file of val.fileMetadata) {
-      if (typeof file.name !== 'string' || typeof file.type !== 'string')
+      if (
+        typeof file.name !== 'string' ||
+        typeof file.type !== 'string' ||
+        file.size <= 0
+      )
         return { error: 'Invalid file metadata' };
     }
 
@@ -107,19 +57,32 @@ uploadRoute.post(
   async (c) => {
     try {
       const { planId } = c.req.valid('param') as { planId: string };
-      const { fileMetadata } = c.req.valid('json') as {
-        fileMetadata: { name: string; type: string }[];
+      const { fileMetadata, pin } = c.req.valid('json') as {
+        fileMetadata: { name: string; type: string; size: number }[];
+        pin?: string;
       };
 
-      const paused = await isPaused(planId);
-      if (paused) return c.json({ error: 'Uploads are paused' }, 403);
+      if (fileMetadata.length === 0)
+        return c.json({ error: 'No files provided' }, 400);
 
-      const authorized = await isAuthorized(c.req.valid('json').pin, planId);
-      if (!authorized) return c.json({ error: 'Invalid pin' }, 401);
+      const uploadPermissions = await checkUploadPermissions({
+        uploadSize: fileMetadata.reduce((acc, file) => acc + file.size, 0),
+        planId,
+        pin: c.req.valid('json').pin,
+      });
+
+      if (!uploadPermissions.exists)
+        return c.json({ error: 'Plan not found' }, 404);
+      if (uploadPermissions.paused)
+        return c.json({ error: 'Uploads are paused' }, 403);
+      if (!uploadPermissions.authorized)
+        return c.json({ error: 'Invalid pin' }, 401);
+      if (!uploadPermissions.hasSpace)
+        return c.json({ error: 'Storage limit exceeded' }, 409);
 
       const presignedUrls = await Promise.all(
         fileMetadata.map(async (file) => {
-          const url = r2.presign(file.name, {
+          const url = R2.presign(file.name, {
             expiresIn: 3600, // 1 hour
             method: 'PUT',
             type: file.type,
@@ -135,6 +98,44 @@ uploadRoute.post(
     } catch (e) {
       console.error(e);
       return c.json({ error: 'An error occurred while presigning URLs.' }, 500);
+    }
+  }
+);
+
+uploadRoute.post(
+  '/:planId/add-image',
+  validator('param', planIdValidation),
+  validator('json', (val) => {
+    if (typeof val.guest !== 'string')
+      return { error: 'Guest name must be a string' };
+    if (typeof val.size !== 'number' || val.size <= 0)
+      return { error: 'Invalid image size' };
+    if (typeof val.url !== 'string')
+      return { error: 'Image URL must be a string' };
+    if (typeof val.key !== 'string')
+      return { error: 'Image key must be a string' };
+
+    return {
+      guest: val.guest,
+      size: val.size,
+      url: val.url,
+      key: val.key,
+    };
+  }),
+  async (c) => {
+    const { planId } = c.req.valid('param') as { planId: string };
+    const { guest, size, url, key } = c.req.valid('json') as {
+      guest: string;
+      size: number;
+      url: string;
+      key: string;
+    };
+
+    try {
+      // TODO: Add image to the database and create a thumbnail
+    } catch (e) {
+      console.error(e);
+      return c.json({ error: 'An error occurred while adding image.' }, 500);
     }
   }
 );
