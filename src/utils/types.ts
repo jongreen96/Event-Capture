@@ -21,7 +21,6 @@ export type Plan = {
     planid: string;
     guestname: string;
     imagename: string;
-    imageurl: string;
     imagesize: number;
     createdat: Date;
   }[];

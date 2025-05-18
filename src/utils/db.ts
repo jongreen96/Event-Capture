@@ -194,3 +194,26 @@ export async function checkUploadPermissions({
     hasSpace,
   };
 }
+
+export async function addImage({
+  planId,
+  imagename,
+  size,
+  guest,
+}: {
+  planId: string;
+  imagename: string;
+  size: number;
+  guest: string;
+}) {
+  const res = await db.query(
+    `
+    INSERT INTO images (id, planid, guestname, imagename, imagesize)
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING id
+    `,
+    [randomUUIDv7(), planId, guest, imagename, Math.ceil(size / 1024)]
+  );
+
+  return res.rows[0].id;
+}

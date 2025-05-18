@@ -91,8 +91,6 @@ export const updatePlanValidation = (val: any, c: any) => {
 };
 
 export const planIdValidation = (val: any, c: any) => {
-  console.log(val);
-
   const uuidRegex =
     /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
 
