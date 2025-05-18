@@ -1,6 +1,11 @@
 import { Hono } from 'hono';
 import { validator } from 'hono/validator';
-import { checkUploadPermissions, getUploadData, R2 } from '../utils/db';
+import {
+  addImage,
+  checkUploadPermissions,
+  getUploadData,
+  R2,
+} from '../utils/db';
 import { planIdValidation } from '../utils/validators';
 
 export const uploadRoute = new Hono<{
@@ -87,9 +92,17 @@ uploadRoute.post(
             method: 'PUT',
             type: file.type,
           });
+
+          const thumbUrl = R2.presign(`${file.name}-preview`, {
+            expiresIn: 3600, // 1 hour
+            method: 'PUT',
+            type: file.type,
+          });
+
           return {
             url,
-            key: file.name,
+            thumbUrl,
+            fileName: file.name,
           };
         })
       );
@@ -110,29 +123,32 @@ uploadRoute.post(
       return { error: 'Guest name must be a string' };
     if (typeof val.size !== 'number' || val.size <= 0)
       return { error: 'Invalid image size' };
-    if (typeof val.url !== 'string')
-      return { error: 'Image URL must be a string' };
-    if (typeof val.key !== 'string')
-      return { error: 'Image key must be a string' };
+    if (typeof val.imagename !== 'string')
+      return { error: 'Image name must be a string' };
 
     return {
       guest: val.guest,
       size: val.size,
-      url: val.url,
-      key: val.key,
+      imagename: val.imagename,
     };
   }),
   async (c) => {
     const { planId } = c.req.valid('param') as { planId: string };
-    const { guest, size, url, key } = c.req.valid('json') as {
+    const { guest, size, imagename } = c.req.valid('json') as {
       guest: string;
       size: number;
-      url: string;
-      key: string;
+      imagename: string;
     };
 
     try {
-      // TODO: Add image to the database and create a thumbnail
+      await addImage({
+        planId,
+        guest,
+        size,
+        imagename,
+      });
+
+      return c.json({ message: 'Image added successfully' }, 200);
     } catch (e) {
       console.error(e);
       return c.json({ error: 'An error occurred while adding image.' }, 500);

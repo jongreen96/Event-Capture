@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { createFileRoute, redirect } from '@tanstack/react-router';
+import imageCompression from 'browser-image-compression';
 import { OTPInput } from 'input-otp';
 import { Loader2Icon, UploadIcon } from 'lucide-react';
 import { nanoid } from 'nanoid';
@@ -88,12 +89,21 @@ function RouteComponent() {
       return;
     }
 
-    const presignedUrls = await res.json();
+    const presignedUrls = (await res.json()) as {
+      url: string;
+      thumbUrl: string;
+      fileName: string;
+    }[];
 
     let completedUploads = 0;
     await Promise.all(
       Array.from(files).map(async (file, index) => {
-        const { url, key } = presignedUrls[index];
+        const { url, thumbUrl, fileName } = presignedUrls[index];
+
+        const thumbnail = await imageCompression(file, {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 200,
+        });
 
         // Upload the file to R2
         await fetch(url, {
@@ -101,15 +111,19 @@ function RouteComponent() {
           body: file,
         });
 
+        await fetch(thumbUrl, {
+          method: 'PUT',
+          body: thumbnail,
+        });
+
         await fetch(`/api/upload/${planId}/add-image`, {
           method: 'POST',
           body: JSON.stringify({
-            planId,
             guest,
             size: file.size,
-            url: key,
-            key: fileMetadata[index].name,
+            imagename: fileName,
           }),
+          headers: { 'Content-Type': 'application/json' },
         });
 
         completedUploads += 1;
