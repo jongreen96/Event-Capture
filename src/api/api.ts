@@ -9,6 +9,8 @@ const apiRoute = new Hono<{
 
 apiRoute.on(['POST', 'GET'], '/auth/**', (c) => auth.handler(c.req.raw));
 
+apiRoute.route('/upload', uploadRoute);
+
 apiRoute.use('*', async (c, next) => {
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
   if (!session) return c.notFound();
@@ -18,8 +20,6 @@ apiRoute.use('*', async (c, next) => {
 });
 
 apiRoute.get('/test', (c) => c.json(c.get('user')));
-
-apiRoute.route('/upload', uploadRoute);
 
 apiRoute.route('/plan', planRoute);
 
