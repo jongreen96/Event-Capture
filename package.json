@@ -6,6 +6,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.76.1",
+    "@tanstack/react-router": "^1.120.5",
     "better-auth": "^1.2.5",
     "hono": "^4.7.5",
     "nanoid": "^5.1.5",
