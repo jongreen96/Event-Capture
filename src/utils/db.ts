@@ -1,6 +1,12 @@
 import { randomUUIDv7, S3Client } from 'bun';
 import { Pool } from 'pg';
-import { planSizes } from '../../client/src/routes/_authenticated/plans';
+
+const planSizes = {
+  trial: { storage: 100 },
+  small: { storage: 5000 },
+  medium: { storage: 50000 },
+  large: { storage: 250000 },
+};
 
 const db = new Pool({ connectionString: process.env.DATABASE_URL });
 
