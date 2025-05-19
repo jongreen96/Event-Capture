@@ -1,4 +1,4 @@
-import{r as a}from"./index-CuYHjIUa.js";/**
+import{r as a}from"./index-BSuUrazD.js";/**
  * @license lucide-react v0.483.0 - ISC
  *
  * This source code is licensed under the ISC license.

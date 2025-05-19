@@ -52,7 +52,7 @@ function RouteComponent() {
 
         <div className='flex-1 flex items-center justify-center overflow-hidden'>
           <img
-            src={`https://images.event-capture.jongreen.dev/${image.imagename}`}
+            src={`https://images.jongreen.dev/${image.imagename}`}
             alt={image.imagename}
             className='w-full h-full object-contain rounded'
           />

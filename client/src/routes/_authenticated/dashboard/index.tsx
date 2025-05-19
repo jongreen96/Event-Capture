@@ -159,7 +159,7 @@ function RouteComponent() {
               >
                 <Card className='p-0 overflow-hidden aspect-square'>
                   <img
-                    src={`https://images.event-capture.jongreen.dev/${image.imagename}-preview`}
+                    src={`https://images.jongreen.dev/${image.imagename}-preview`}
                     alt={image.imagename}
                     className='size-full object-cover object-center'
                   />
