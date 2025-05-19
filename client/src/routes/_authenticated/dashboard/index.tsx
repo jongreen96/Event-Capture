@@ -256,7 +256,7 @@ function RouteComponent() {
 }
 
 function ShareUploadDialog({ plan }: { plan: Plan }) {
-  const link = 'http://localhost:5173/upload/' + plan.url;
+  const link = `${window.location.origin}/upload/${plan.url}`;
 
   const [showPin, setShowPin] = useState(false);
 
