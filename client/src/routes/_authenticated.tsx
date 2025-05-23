@@ -14,8 +14,13 @@ export type PlanContextType = {
 
 export const PlanContext = createContext<PlanContextType | null>(null);
 
+let cachedSession: Awaited<ReturnType<typeof getSession>>['data'] | null = null;
+
 export const Route = createFileRoute('/_authenticated')({
   beforeLoad: async () => {
+    if (cachedSession) {
+      return cachedSession;
+    }
     const session = (await getSession()).data;
     if (!session) {
       throw redirect({
@@ -23,7 +28,7 @@ export const Route = createFileRoute('/_authenticated')({
         search: { error: undefined },
       });
     }
-
+    cachedSession = session;
     return session;
   },
   component: RouteComponent,
