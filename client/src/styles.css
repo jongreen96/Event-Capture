@@ -136,3 +136,7 @@ code {
     @apply bg-background text-foreground;
   }
 }
+
+html {
+  @apply bg-background;
+}
