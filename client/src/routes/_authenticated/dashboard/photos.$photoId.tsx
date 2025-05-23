@@ -40,7 +40,7 @@ function RouteComponent() {
         navigate({ to: `/dashboard/photos` });
       }}
     >
-      <DialogContent className='max-h-[calc(100svh-2rem)]'>
+      <DialogContent className='max-h-[calc(100svh-2rem)] p-2'>
         <DialogHeader className='flex-row items-center justify-between'>
           <div className='space-y-2'>
             <DialogTitle>
@@ -58,11 +58,11 @@ function RouteComponent() {
           </DialogClose>
         </DialogHeader>
 
-        <div className='flex-1 flex items-center justify-center overflow-hidden'>
+        <div className='flex-1 flex items-center justify-center'>
           <img
             src={`https://images.jongreen.dev/${image.imagename}`}
             alt={image.imagename}
-            className='w-full h-full object-contain rounded'
+            className='w-full h-full max-h-[70vh] object-contain rounded'
           />
         </div>
       </DialogContent>
