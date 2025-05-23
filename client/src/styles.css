@@ -129,10 +129,6 @@ code {
 }
 
 @layer base {
-  html,
-  body {
-    @apply bg-background;
-  }
   * {
     @apply border-border outline-ring/50;
   }
