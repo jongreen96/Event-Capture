@@ -129,7 +129,8 @@ code {
 }
 
 @layer base {
-  html {
+  html,
+  body {
     @apply bg-background;
   }
   * {
