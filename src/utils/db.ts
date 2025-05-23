@@ -223,3 +223,27 @@ export async function addImage({
 
   return res.rows[0].id;
 }
+
+export async function deleteImage({
+  userId,
+  photoId,
+}: {
+  userId: string;
+  photoId: string;
+}) {
+  const res = await db.query(
+    `
+    DELETE FROM images
+    USING plan
+    WHERE images.id = $1
+      AND images.planid = plan.id
+      AND plan.userid = $2
+    RETURNING images.imagename
+    `,
+    [photoId, userId]
+  );
+
+  if (res.rowCount === 0) throw new Error('No image found');
+
+  return res.rows[0].imagename;
+}

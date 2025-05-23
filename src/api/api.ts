@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { auth } from '../utils/auth';
+import { photosRoute } from './photos';
 import { planRoute } from './plan';
 import { uploadRoute } from './upload';
 
@@ -19,9 +20,9 @@ apiRoute.use('*', async (c, next) => {
   return next();
 });
 
-apiRoute.get('/test', (c) => c.json(c.get('user')));
-
 apiRoute.route('/plan', planRoute);
+
+apiRoute.route('/photos', photosRoute);
 
 apiRoute.get('*', (c) => c.notFound());
 
