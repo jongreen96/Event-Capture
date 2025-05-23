@@ -25,7 +25,7 @@ function RouteComponent() {
 
   return (
     <Card className='shadow-none border-0 @container/ic'>
-      <CardHeader className='space-y-2'>
+      <CardHeader className='space-y-2 px-0'>
         <Link
           to='/dashboard'
           className={buttonVariants({
@@ -39,7 +39,7 @@ function RouteComponent() {
         <CardTitle>All Photos</CardTitle>
       </CardHeader>
 
-      <CardContent className='grid gap-2 grid-cols-2 @xs/ic:grid-cols-3 @md/ic:grid-cols-4 @xl/ic:grid-cols-5 @2xl/ic:grid-cols-6 @4xl/ic:grid-cols-8 @6xl/ic:grid-cols-10'>
+      <CardContent className='grid p-0 gap-2 grid-cols-2 @xs/ic:grid-cols-3 @md/ic:grid-cols-4 @xl/ic:grid-cols-5 @2xl/ic:grid-cols-6 @4xl/ic:grid-cols-8 @6xl/ic:grid-cols-10'>
         {plan?.images.map((image) => (
           <Link
             to={`/dashboard/photos/$photoId`}
