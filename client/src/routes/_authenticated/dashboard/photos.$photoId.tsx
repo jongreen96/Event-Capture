@@ -3,6 +3,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -41,7 +42,14 @@ function RouteComponent() {
     >
       <DialogContent className='max-h-[calc(100svh-2rem)]'>
         <DialogHeader className='flex-row items-center justify-between'>
-          <DialogTitle>{image.imagename}</DialogTitle>
+          <div className='space-y-2'>
+            <DialogTitle>
+              {image.imagename.split('/')[2].split('.')[0]}
+            </DialogTitle>
+            <DialogDescription>
+              Uploaded by: {image.guestname}
+            </DialogDescription>
+          </div>
           <DialogClose asChild>
             <Button variant='outline' size='icon'>
               <XIcon />

@@ -15,7 +15,6 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import imageCompression from 'browser-image-compression';
 import { OTPInput } from 'input-otp';
 import { Loader2Icon, UploadIcon } from 'lucide-react';
-import { nanoid } from 'nanoid';
 import { useMemo, useState } from 'react';
 import type { uploadPlan } from '../../../src/utils/types';
 
@@ -61,7 +60,7 @@ function RouteComponent() {
     setIsUploading(true);
 
     const fileMetadata = Array.from(files).map((file) => ({
-      name: planId + '/' + nanoid(5) + '-' + file.name,
+      name: `${planId}/${guest}/${file.name}`,
       type: file.type,
       size: file.size,
     }));
