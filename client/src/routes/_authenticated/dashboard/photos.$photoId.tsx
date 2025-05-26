@@ -105,13 +105,14 @@ function RouteComponent() {
           )}
 
           <div className='flex items-center justify-center gap-2'>
-            <Button
-              variant='outline'
-              size='icon'
-              // TODO: Add download functionality
-            >
-              <DownloadIcon />
-              <span className='sr-only'>Download</span>
+            <Button variant='outline' size='icon' asChild>
+              <a
+                href={`https://images.jongreen.dev/${image.imagename}`}
+                download
+              >
+                <DownloadIcon />
+                <span className='sr-only'>Download</span>
+              </a>
             </Button>
 
             <Button

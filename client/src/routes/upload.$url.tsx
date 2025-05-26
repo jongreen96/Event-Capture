@@ -108,6 +108,10 @@ function RouteComponent() {
         await fetch(url, {
           method: 'PUT',
           body: file,
+          headers: {
+            'Content-Type': file.type,
+            'Content-Disposition': `attachment; filename="${fileName}"`,
+          },
         });
 
         await fetch(thumbUrl, {
