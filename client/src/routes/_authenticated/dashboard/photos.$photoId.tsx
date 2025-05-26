@@ -193,6 +193,15 @@ function DeleteButton({
         headers: { 'Content-Type': 'application/json' },
       });
     },
+    onSettled: () => {
+      if (nextPhotoId)
+        navigate({
+          to: `/dashboard/photos/$photoId`,
+          params: { photoId: nextPhotoId },
+        });
+      else navigate({ to: `/dashboard/photos` });
+      setIsLoading(false);
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['plans'] }),
   });
 
@@ -212,11 +221,6 @@ function DeleteButton({
       onClick={() => {
         setIsLoading(true);
         mutation.mutate(photoId);
-        if (nextPhotoId)
-          navigate({
-            to: `/dashboard/photos/$photoId`,
-            params: { photoId: nextPhotoId },
-          });
       }}
       className='bg-red-500/25 hover:bg-red-500/75'
     >
