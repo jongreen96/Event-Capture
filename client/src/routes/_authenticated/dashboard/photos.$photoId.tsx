@@ -62,6 +62,8 @@ function RouteComponent() {
       ? images[(currentIndex - 1 + images.length) % images.length]
       : undefined;
 
+  const [isLoading, setIsLoading] = useState(true);
+
   return (
     <Dialog
       defaultOpen
@@ -87,7 +89,22 @@ function RouteComponent() {
           </DialogClose>
         </DialogHeader>
 
-        <Image image={image} />
+        <div className='flex-1 flex items-center min-h-60 justify-center relative'>
+          {isLoading && (
+            <div className='absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-sm rounded'>
+              <Loader2 className='animate-spin h-10 w-10 text-gray-500' />
+            </div>
+          )}
+          <img
+            src={`https://images.jongreen.dev/${image.imagename}`}
+            alt={image.imagename}
+            className='w-full h-full max-h-[70vh] object-contain rounded'
+            fetchPriority='high'
+            loading='eager'
+            onLoad={() => setIsLoading(false)}
+            onError={() => setIsLoading(false)}
+          />
+        </div>
 
         <div className='grid grid-cols-3 gap-2 mt-4'>
           {prevImage && (
@@ -129,7 +146,12 @@ function RouteComponent() {
               <span className='sr-only'>Open in separate window</span>
             </Button>
 
-            <DeleteButton photoId={photoId} />
+            <DeleteButton
+              photoId={photoId}
+              nextPhotoId={nextImage?.id}
+              isLoading={isLoading}
+              setIsLoading={setIsLoading}
+            />
           </div>
 
           {nextImage && (
@@ -151,42 +173,19 @@ function RouteComponent() {
   );
 }
 
-function Image({
-  image,
+function DeleteButton({
+  photoId,
+  nextPhotoId,
+  isLoading,
+  setIsLoading,
 }: {
-  image: {
-    id: string;
-    planid: string;
-    guestname: string;
-    imagename: string;
-    imagesize: number;
-    createdat: Date;
-  };
+  photoId: string;
+  nextPhotoId?: string;
+  isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
 }) {
-  const [isLoading, setIsLoading] = useState(true);
-
-  return (
-    <div className='flex-1 flex items-center min-h-60 justify-center relative'>
-      {isLoading && (
-        <div className='absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-sm rounded'>
-          <Loader2 className='animate-spin h-10 w-10 text-gray-500' />
-        </div>
-      )}
-      <img
-        src={`https://images.jongreen.dev/${image.imagename}`}
-        alt={image.imagename}
-        className='w-full h-full max-h-[70vh] object-contain rounded'
-        fetchPriority='high'
-        loading='eager'
-        onLoad={() => setIsLoading(false)}
-        onError={() => setIsLoading(false)}
-      />
-    </div>
-  );
-}
-
-function DeleteButton({ photoId }: { photoId: string }) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const mutation = useMutation({
     mutationFn: (photoId: string) => {
       return fetch(`/api/photos/${photoId}`, {
@@ -194,9 +193,7 @@ function DeleteButton({ photoId }: { photoId: string }) {
         headers: { 'Content-Type': 'application/json' },
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['plans'] });
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['plans'] }),
   });
 
   if (mutation.isPending)
@@ -211,8 +208,15 @@ function DeleteButton({ photoId }: { photoId: string }) {
     <Button
       variant='outline'
       size='icon'
+      disabled={isLoading}
       onClick={() => {
+        setIsLoading(true);
         mutation.mutate(photoId);
+        if (nextPhotoId)
+          navigate({
+            to: `/dashboard/photos/$photoId`,
+            params: { photoId: nextPhotoId },
+          });
       }}
       className='bg-red-500/25 hover:bg-red-500/75'
     >
