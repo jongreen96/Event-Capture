@@ -24,6 +24,7 @@ import {
   Trash2Icon,
   XIcon,
 } from 'lucide-react';
+import { useState } from 'react';
 
 export const Route = createFileRoute(
   '/_authenticated/dashboard/photos/$photoId'
@@ -86,15 +87,7 @@ function RouteComponent() {
           </DialogClose>
         </DialogHeader>
 
-        <div className='flex-1 flex items-center justify-center'>
-          <img
-            src={`https://images.jongreen.dev/${image.imagename}`}
-            alt={image.imagename}
-            className='w-full h-full max-h-[70vh] object-contain rounded'
-            fetchPriority='high'
-            loading='eager'
-          />
-        </div>
+        <Image image={image} />
 
         <div className='grid grid-cols-3 gap-2 mt-4'>
           {prevImage && (
@@ -154,6 +147,40 @@ function RouteComponent() {
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function Image({
+  image,
+}: {
+  image: {
+    id: string;
+    planid: string;
+    guestname: string;
+    imagename: string;
+    imagesize: number;
+    createdat: Date;
+  };
+}) {
+  const [isLoading, setIsLoading] = useState(true);
+
+  return (
+    <div className='flex-1 flex items-center min-h-60 justify-center relative'>
+      {isLoading && (
+        <div className='absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-sm rounded'>
+          <Loader2 className='animate-spin h-10 w-10 text-gray-500' />
+        </div>
+      )}
+      <img
+        src={`https://images.jongreen.dev/${image.imagename}`}
+        alt={image.imagename}
+        className='w-full h-full max-h-[70vh] object-contain rounded'
+        fetchPriority='high'
+        loading='eager'
+        onLoad={() => setIsLoading(false)}
+        onError={() => setIsLoading(false)}
+      />
+    </div>
   );
 }
 
