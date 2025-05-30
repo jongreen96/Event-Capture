@@ -7,28 +7,42 @@ export const photosRoute = new Hono<{
 }>();
 
 photosRoute.delete(
-  '/:photoId',
-  validator('param', (val) => {
-    if (typeof val.photoId !== 'string' || val.photoId.length === 0) {
+  '/',
+  validator('json', (val) => {
+    if (
+      !val ||
+      !Array.isArray(val.photoId) ||
+      val.photoId.some((id: unknown) => typeof id !== 'string')
+    ) {
       return {
-        error: 'Photo ID must be a non-empty string',
+        error: 'Invalid request body',
       };
     }
 
-    return { photoId: val.photoId };
+    return {
+      photoIdArr: val.photoId,
+    };
   }),
   async (c) => {
-    const { photoId } = c.req.valid('param') as { photoId: string };
+    const { photoIdArr } = c.req.valid('json') as { photoIdArr: string[] };
     const userId = c.get('user').id;
 
     try {
-      const deletedImage = await deleteImage({
-        userId,
-        photoId,
-      });
+      for (const photoId of photoIdArr) {
+        const deletedImage = await deleteImage({
+          userId,
+          photoId,
+        });
 
-      R2.delete(deletedImage);
-      R2.delete(`${deletedImage}-preview`);
+        if (!deletedImage)
+          return c.json(
+            { error: `Photo with ID ${photoId} not found or already deleted.` },
+            404
+          );
+
+        R2.delete(deletedImage);
+        R2.delete(`${deletedImage}-preview`);
+      }
     } catch (e) {
       console.error(e);
       return c.json(

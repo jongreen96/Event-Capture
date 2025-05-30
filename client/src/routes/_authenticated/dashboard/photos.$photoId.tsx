@@ -4,6 +4,7 @@ import {
   DialogClose,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -106,7 +107,7 @@ function RouteComponent() {
           />
         </div>
 
-        <div className='grid grid-cols-3 gap-2 mt-4'>
+        <DialogFooter className='grid grid-cols-3 gap-2'>
           {prevImage && (
             <Link
               to='/dashboard/photos/$photoId'
@@ -167,7 +168,7 @@ function RouteComponent() {
               <ChevronRightIcon />
             </Link>
           )}
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
@@ -188,9 +189,10 @@ function DeleteButton({
   const navigate = useNavigate();
   const mutation = useMutation({
     mutationFn: (photoId: string) => {
-      return fetch(`/api/photos/${photoId}`, {
+      return fetch(`/api/photos`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ photoId: [photoId] }),
       });
     },
     onSettled: () => {
