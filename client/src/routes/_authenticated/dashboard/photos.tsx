@@ -21,13 +21,12 @@ function RouteComponent() {
     staleTime: Infinity,
   });
 
-  const plan = plans.data?.find((plan) => plan.id === activePlanId);
-  if (!plan) return <p>Select a plan from the sidebar.</p>;
-
   const queryClient = useQueryClient();
-
   const [select, setSelect] = useState<boolean>(false);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
+
+  const plan = plans.data?.find((plan) => plan.id === activePlanId);
+  if (!plan) return <p>Select a plan from the sidebar.</p>;
 
   return (
     <Card className='shadow-none border-0 @container/ic'>
