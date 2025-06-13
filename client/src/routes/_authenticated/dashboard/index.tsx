@@ -199,7 +199,7 @@ function RouteComponent() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
-                  <TableHead className='text-right'>Photos</TableHead>
+                  <TableHead>Photos</TableHead>
                   <TableHead className='text-right'>Usage</TableHead>
                 </TableRow>
               </TableHeader>
@@ -211,7 +211,7 @@ function RouteComponent() {
                       <TableCell className='max-w-1 truncate'>
                         {guest}
                       </TableCell>
-                      <TableCell className='text-right'>
+                      <TableCell>
                         {
                           plan.images.filter(
                             (image) => image.guestname === guest
