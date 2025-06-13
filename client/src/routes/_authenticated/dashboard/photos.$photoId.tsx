@@ -21,7 +21,6 @@ import {
   ChevronRightIcon,
   DownloadIcon,
   Loader2,
-  SquareArrowOutUpRightIcon,
   Trash2Icon,
   XIcon,
 } from 'lucide-react';
@@ -131,20 +130,6 @@ function RouteComponent() {
                 <DownloadIcon />
                 <span className='sr-only'>Download</span>
               </a>
-            </Button>
-
-            <Button
-              variant='outline'
-              size='icon'
-              onClick={() => {
-                window.open(
-                  `https://images.jongreen.dev/${image.imagename}`,
-                  '_blank'
-                );
-              }}
-            >
-              <SquareArrowOutUpRightIcon />
-              <span className='sr-only'>Open in separate window</span>
             </Button>
 
             <DeleteButton
