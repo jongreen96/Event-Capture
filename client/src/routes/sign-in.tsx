@@ -6,10 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { getSession, signIn } from '@/lib/auth-client';
-import { cn } from '@/lib/utils';
-import { Separator } from '@radix-ui/react-separator';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/sign-in')({
@@ -35,8 +32,6 @@ export const Route = createFileRoute('/sign-in')({
 });
 
 function RouteComponent() {
-  const { error } = Route.useSearch();
-
   return (
     <main className='h-svh flex items-center justify-center'>
       <Card className='w-full sm:w-72 overflow-hidden shadow-none border-none'>
@@ -62,33 +57,6 @@ function RouteComponent() {
               }}
             >
               Sign in with Google
-            </Button>
-          </form>
-
-          <div className='flex items-center justify-center space-x-2'>
-            <Separator className='mt-1 w-5/12' />
-            <p className='text-center text-muted-foreground'>or</p>
-            <Separator className='mt-1 w-5/12' />
-          </div>
-
-          <form className='flex flex-col gap-2'>
-            <Input
-              type='email'
-              name='email'
-              id='email-resend'
-              placeholder='Enter your email...'
-              autoComplete='email'
-              required
-              className={cn('w-full', error && 'border-red-500')}
-            />
-
-            {error && (
-              <p className='text-center text-xs text-red-500'>{error}</p>
-            )}
-
-            {/* TODO: Add magic link sign up */}
-            <Button type='submit' className='w-full'>
-              Sign in with Email
             </Button>
           </form>
         </CardContent>
