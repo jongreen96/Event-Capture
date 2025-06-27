@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
@@ -21,11 +20,6 @@ import { Route as AuthenticatedDashboardPhotosRouteImport } from './routes/_auth
 import { Route as AuthenticatedDashboardGuestsRouteImport } from './routes/_authenticated/dashboard/guests'
 import { Route as AuthenticatedDashboardPhotosPhotoIdRouteImport } from './routes/_authenticated/dashboard/photos.$photoId'
 
-const WelcomeRoute = WelcomeRouteImport.update({
-  id: '/welcome',
-  path: '/welcome',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
@@ -85,7 +79,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
   '/sign-in': typeof SignInRoute
-  '/welcome': typeof WelcomeRoute
   '/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/plans': typeof AuthenticatedPlansRoute
   '/upload/$url': typeof UploadUrlRoute
@@ -98,7 +91,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
   '/sign-in': typeof SignInRoute
-  '/welcome': typeof WelcomeRoute
   '/plans': typeof AuthenticatedPlansRoute
   '/upload/$url': typeof UploadUrlRoute
   '/dashboard/guests': typeof AuthenticatedDashboardGuestsRoute
@@ -111,7 +103,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/sign-in': typeof SignInRoute
-  '/welcome': typeof WelcomeRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/_authenticated/plans': typeof AuthenticatedPlansRoute
   '/upload/$url': typeof UploadUrlRoute
@@ -126,7 +117,6 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/sign-in'
-    | '/welcome'
     | '/dashboard'
     | '/plans'
     | '/upload/$url'
@@ -139,7 +129,6 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/sign-in'
-    | '/welcome'
     | '/plans'
     | '/upload/$url'
     | '/dashboard/guests'
@@ -151,7 +140,6 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/sign-in'
-    | '/welcome'
     | '/_authenticated/dashboard'
     | '/_authenticated/plans'
     | '/upload/$url'
@@ -165,19 +153,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   SignInRoute: typeof SignInRoute
-  WelcomeRoute: typeof WelcomeRoute
   UploadUrlRoute: typeof UploadUrlRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/welcome': {
-      id: '/welcome'
-      path: '/welcome'
-      fullPath: '/welcome'
-      preLoaderRoute: typeof WelcomeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/sign-in': {
       id: '/sign-in'
       path: '/sign-in'
@@ -304,7 +284,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   SignInRoute: SignInRoute,
-  WelcomeRoute: WelcomeRoute,
   UploadUrlRoute: UploadUrlRoute,
 }
 export const routeTree = rootRouteImport

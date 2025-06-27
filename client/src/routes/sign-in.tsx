@@ -51,7 +51,7 @@ function RouteComponent() {
                 await signIn.social({
                   provider: 'google',
                   callbackURL: '/dashboard',
-                  newUserCallbackURL: '/welcome',
+                  newUserCallbackURL: '/plans',
                   errorCallbackURL: '/?error=true',
                 });
               }}
