@@ -96,7 +96,7 @@ function App() {
           </p>
 
           <Card className='mt-4 w-full p-0 overflow-hidden bg-muted lg:w-3/4'>
-            <img src='/images/pic-1.png' alt='Event Capture Image' />
+            <img src='/images/pic-1-new.png' alt='Event Capture Image' />
           </Card>
         </section>
 
