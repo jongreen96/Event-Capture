@@ -1,5 +1,5 @@
 import { buttonVariants } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getSession } from '@/lib/auth-client';
 import { createFileRoute, Link, redirect } from '@tanstack/react-router';
 
@@ -19,41 +19,32 @@ export const Route = createFileRoute('/')({
 function App() {
   return (
     <>
-      <section className='flex items-center lg:h-[50vh] shadow-sm'>
-        <div className='max-w-7xl w-full mx-auto flex flex-col items-center justify-around gap-6 p-4 lg:min-h-96 lg:flex-row'>
-          <div className='max-w-prose space-y-6 text-lg font-semibold'>
-            <h1 className='text-4xl font-semibold'>
+      <section
+        className='flex items-center lg:h-[50vh] shadow-sm relative text-white'
+        style={{
+          backgroundImage: "url('/images/hero-img.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        <div className='absolute inset-0 bg-black/50 pointer-events-none' />
+        <div className='relative max-w-7xl w-full mx-auto flex flex-col items-center justify-center gap-6 p-4 lg:min-h-96 '>
+          <div className='max-w-prose text-lg font-semibold '>
+            <h1 className='text-4xl text-center font-semibold'>
               <span className='text-5xl font-bold'>Event Capture</span>
               <br />
               Never miss the moment.
             </h1>
-
-            <p>
-              Capture every moment of an event effortlessly from all angles with
-              the help of all your guests.
-            </p>
-
-            <ul className='space-y-2'>
-              <li>🎉 Effortlessly generate a unique QR code for your event</li>
-              <li>
-                📸 Invite guests to capture and share their favorite moments
-              </li>
-              <li>
-                🗂️ Seamlessly collect, organize, and download all shared photos
-              </li>
-              <li>💕 Preserve every memory with no moment left behind</li>
-              <li>💌 Enjoy a hassle-free experience from start to finish</li>
-            </ul>
           </div>
 
-          <div className='grid text-center'>
-            <p>Get Started</p>
+          <div>
             <Link
               to='/sign-in'
               search={{ error: undefined }}
-              className={buttonVariants()}
+              className={buttonVariants({ variant: 'secondary' })}
             >
-              Sign In
+              Get Started
             </Link>
           </div>
         </div>
@@ -61,47 +52,34 @@ function App() {
 
       <main className='mx-auto max-w-7xl flex flex-col gap-16'>
         <section className='flex flex-col items-center mt-16 justify-evenly gap-4 p-4 md:flex-row'>
-          <Card className='transition-all md:w-96'>
-            <CardContent className='p-4'>
-              &quot;Event Capture made our wedding unforgettable! All our guests
-              were able to share their photos easily, and we got to relive the
-              day from so many perspectives. The QR code feature was super
-              convenient, and managing the photos afterward was a breeze. Highly
-              recommend this for any event!&quot;
+          <Card className='md:w-96'>
+            <CardHeader>
+              <CardTitle>Easy Photo Collection</CardTitle>
+            </CardHeader>
+            <CardContent>
+              Guests can easily upload photos directly from their devices,
+              ensuring no one misses out on sharing their memories.
             </CardContent>
-
-            <CardFooter className='justify-end font-semibold'>
-              - Sarah and Mark *
-            </CardFooter>
           </Card>
 
-          <Card className='transition-all md:w-96'>
-            <CardContent className='p-4'>
-              &quot;We used Event Capture for our company&apos;s annual
-              conference, and it was a game-changer. Instead of hiring multiple
-              photographers, we let our attendees capture the moments. The
-              platform made it so easy to collect and download all the images,
-              ensuring we didn&apos;t miss a single highlight. It&apos;s a
-              must-have for any large event.&quot;
+          <Card className='md:w-96'>
+            <CardHeader>
+              <CardTitle>Lossless Quality</CardTitle>
+            </CardHeader>
+            <CardContent>
+              Maintain the original quality of your photos with our lossless
+              upload process, preserving every detail.
             </CardContent>
-
-            <CardFooter className='justify-end font-semibold'>
-              - John Reynolds, CEO *
-            </CardFooter>
           </Card>
 
-          <Card className='transition-all md:w-96'>
-            <CardContent className='p-4'>
-              &quot;As a party planner, Event Capture has become one of my go-to
-              tools. It allows my clients to see their event through the eyes of
-              their guests, which is something truly special. The simplicity of
-              creating a QR code and having everyone contribute photos is
-              unmatched. This service elevates any event!&quot;
+          <Card className='md:w-96'>
+            <CardHeader>
+              <CardTitle>Secure Access</CardTitle>
+            </CardHeader>
+            <CardContent>
+              Control who can view and contribute to your event's photo
+              collection with our secure access features.
             </CardContent>
-
-            <CardFooter className='justify-end font-semibold'>
-              - Emily Carter, Event Planner *
-            </CardFooter>
           </Card>
         </section>
 
